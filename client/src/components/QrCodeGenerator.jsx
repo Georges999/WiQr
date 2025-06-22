@@ -184,7 +184,7 @@ function QrCodeGenerator({ onBack }) {
             </button>
             
             <div className="text-center fade-in-scale">
-              <h1 className="text-5xl md:text-6xl font-bold text-white mb-4 tracking-tight">QR Code Generator</h1>
+              <h1 className="font-display text-page-title mb-4 tracking-tight">QR Code Generator</h1>
               <p className="text-xl text-slate-300 max-w-3xl mx-auto">Create dynamic, trackable QR codes with custom styling and aurora aesthetics</p>
             </div>
           </div>
@@ -359,23 +359,37 @@ function QrCodeGenerator({ onBack }) {
           </div>
         </main>
 
-        {/* Footer */}
-        <footer className="py-12">
-          <div className="max-w-7xl mx-auto px-6 text-center">
-            <p className="text-slate-400 text-lg mb-2">
-              Built with ❤️ by{' '}
-              <a 
-                href="https://georges-ghazal.org" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-aurora-blue hover:text-aurora-purple transition-colors font-semibold"
-              >
-                Georges Ghazal (G.G.)
-              </a>
-            </p>
-            <p className="text-slate-500">
-              Professional digital transformation tools for modern workflows
-            </p>
+        {/* Professional Footer */}
+        <footer className="py-16 border-t border-white/10">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="text-center space-y-4">
+              <div className="flex items-center justify-center space-x-4">
+                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                  <span className="font-display text-white text-sm font-bold">W</span>
+                </div>
+                <span className="font-heading text-lg">WiQr Platform</span>
+              </div>
+              
+              <p className="text-body">
+                Crafted with precision by{' '}
+                <a 
+                  href="https://georges-ghazal.org" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-blue-400 hover:text-blue-300 transition-colors font-medium underline decoration-blue-400/30 hover:decoration-blue-300"
+                >
+                  Georges Ghazal
+                </a>
+              </p>
+              
+              <div className="flex items-center justify-center space-x-6 pt-4">
+                <span className="text-small">© 2024 WiQr Platform</span>
+                <span className="text-small">•</span>
+                <span className="text-small">Enterprise Solutions</span>
+                <span className="text-small">•</span>
+                <span className="text-small">Global Scale</span>
+              </div>
+            </div>
           </div>
         </footer>
       </div>

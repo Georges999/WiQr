@@ -87,8 +87,8 @@ function FileConverter({ onBack }) {
           </button>
           
           <div className="text-center fade-in-scale">
-            <h1 className="text-6xl md:text-7xl font-black text-white mb-6">File Converter</h1>
-            <p className="text-2xl text-slate-300 font-light">Transform your images with professional quality</p>
+            <h1 className="font-display text-page-title mb-6">File Converter</h1>
+            <p className="text-xl text-slate-300 font-light">Transform your images with professional quality</p>
           </div>
         </div>
       </header>
@@ -155,14 +155,27 @@ function FileConverter({ onBack }) {
                     <button
                       key={option.value}
                       onClick={() => setFormat(option.value)}
-                      className={`p-6 rounded-3xl transition-all duration-300 text-left magnetic ${
+                      className={`p-6 rounded-3xl transition-all duration-300 text-left magnetic relative ${
                         format === option.value
-                          ? 'glass-frosted glow-ocean'
+                          ? 'glass-frosted ring-2 ring-blue-400/50 bg-gradient-to-br from-blue-500/20 to-indigo-600/20 shadow-lg shadow-blue-500/25'
                           : 'glass-minimal hover:glass-frosted'
                       }`}
                     >
-                      <div className="font-bold text-white text-xl">{option.label}</div>
-                      <div className="text-slate-300 mt-2">{option.desc}</div>
+                      {format === option.value && (
+                        <div className="absolute top-3 right-3">
+                          <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                        </div>
+                      )}
+                      <div className={`font-bold text-xl ${format === option.value ? 'text-blue-200' : 'text-white'}`}>
+                        {option.label}
+                      </div>
+                      <div className={`mt-2 ${format === option.value ? 'text-blue-300' : 'text-slate-300'}`}>
+                        {option.desc}
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -220,6 +233,40 @@ function FileConverter({ onBack }) {
           )}
         </div>
       </main>
+
+      {/* Professional Footer */}
+      <footer className="py-16 border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center space-y-4">
+            <div className="flex items-center justify-center space-x-4">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                <span className="font-display text-white text-sm font-bold">W</span>
+              </div>
+              <span className="font-heading text-lg">WiQr Platform</span>
+            </div>
+            
+            <p className="text-body">
+              Crafted with precision by{' '}
+              <a 
+                href="https://georges-ghazal.org" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-400 hover:text-blue-300 transition-colors font-medium underline decoration-blue-400/30 hover:decoration-blue-300"
+              >
+                Georges Ghazal
+              </a>
+            </p>
+            
+            <div className="flex items-center justify-center space-x-6 pt-4">
+              <span className="text-small">© 2024 WiQr Platform</span>
+              <span className="text-small">•</span>
+              <span className="text-small">Enterprise Solutions</span>
+              <span className="text-small">•</span>
+              <span className="text-small">Global Scale</span>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

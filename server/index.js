@@ -10,11 +10,25 @@ require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 const app = express();
 const port = 3001;
 
-// Database Connection - use default local MongoDB if no env variable
+// Database Connection - with improved error handling
 const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/wiqr';
+
+let isMongoConnected = false;
+
 mongoose.connect(mongoUri)
-  .then(() => console.log('MongoDB connected successfully.'))
-  .catch(err => console.error('MongoDB connection error:', err));
+  .then(() => {
+    console.log('MongoDB connected successfully.');
+    isMongoConnected = true;
+  })
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+    console.log('⚠️  MongoDB is not running. QR code features will use in-memory storage.');
+    isMongoConnected = false;
+  });
+
+// In-memory storage for QR codes when MongoDB is not available
+let inMemoryQrCodes = [];
+let qrIdCounter = 1;
 
 // Middleware
 app.use(cors());
@@ -57,16 +71,42 @@ app.use('/api/qr', require('./routes/qr'));
 // Redirect Route
 app.get('/:shortUrl', async (req, res) => {
   try {
-    const qrCode = await QrCode.findOne({ shortUrl: req.params.shortUrl });
+    let qrCode = null;
+    const shortId = req.params.shortUrl; // This is just the short ID part
+    
+    if (isMongoConnected) {
+      // Look for QR code where shortUrl contains this shortId
+      qrCode = await QrCode.findOne({ 
+        $or: [
+          { shortUrl: shortId },
+          { shortUrl: `http://localhost:3001/${shortId}` }
+        ]
+      });
+      if (qrCode) {
+        qrCode.clicks++;
+        await qrCode.save();
+      }
+    } else {
+      // Check in-memory storage - look for shortUrl ending with this shortId
+      qrCode = inMemoryQrCodes.find(qr => 
+        qr.shortUrl === shortId || qr.shortUrl.endsWith(`/${shortId}`)
+      );
+      if (qrCode) {
+        qrCode.clicks++;
+      }
+    }
 
     if (qrCode) {
-      qrCode.clicks++;
-      await qrCode.save();
-      return res.redirect(qrCode.originalUrl);
+      // Ensure the URL has a protocol
+      let redirectUrl = qrCode.originalUrl;
+      if (!redirectUrl.startsWith('http://') && !redirectUrl.startsWith('https://')) {
+        redirectUrl = 'https://' + redirectUrl;
+      }
+      console.log(`Redirecting ${shortId} to ${redirectUrl}`);
+      return res.redirect(redirectUrl);
     } else {
-      // If not a short URL, maybe it's a client-side route? 
-      // In a full SPA, you'd serve the index.html here.
-      return res.status(404).json('Not Found');
+      console.log(`Short URL not found: ${shortId}`);
+      return res.status(404).json('Short URL not found');
     }
   } catch (err) {
     console.error(err.message);

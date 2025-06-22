@@ -2,7 +2,7 @@ import { useRef, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-// Aurora-like flowing background with dynamic colors
+// Subtle aurora background - much less intense
 function AuroraBackground() {
   const meshRef = useRef();
   
@@ -26,7 +26,7 @@ function AuroraBackground() {
     uniform vec2 u_mouse;
     varying vec2 vUv;
 
-    // Noise function for organic movement
+    // Simplified noise function
     float noise(vec2 st) {
       return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
     }
@@ -48,9 +48,8 @@ function AuroraBackground() {
     float fbm(vec2 st) {
       float value = 0.0;
       float amplitude = 0.5;
-      float frequency = 0.0;
       
-      for (int i = 0; i < 6; i++) {
+      for (int i = 0; i < 4; i++) {
         value += amplitude * smoothNoise(st);
         st *= 2.0;
         amplitude *= 0.5;
@@ -60,67 +59,52 @@ function AuroraBackground() {
 
     void main() {
       vec2 st = vUv;
-      float t = u_time * 0.15;
+      float t = u_time * 0.05; // Much slower movement
       
-      // Create flowing aurora waves
+      // Subtle flowing waves
       vec2 wave1 = vec2(
-        sin(st.x * 3.0 + t) * 0.1,
-        cos(st.y * 2.0 + t * 0.7) * 0.1
+        sin(st.x * 2.0 + t) * 0.1,
+        cos(st.y * 1.5 + t * 0.7) * 0.08
       );
       
       vec2 wave2 = vec2(
-        cos(st.x * 2.5 + t * 0.8) * 0.15,
-        sin(st.y * 1.8 + t * 1.2) * 0.12
+        cos(st.x * 1.8 + t * 0.8) * 0.12,
+        sin(st.y * 1.2 + t * 1.2) * 0.1
       );
       
-      vec2 wave3 = vec2(
-        sin((st.x + st.y) * 1.5 + t * 0.5) * 0.08,
-        cos((st.x - st.y) * 2.2 + t * 0.9) * 0.1
-      );
-      
-      // Combine waves for complex movement
-      vec2 distortion = wave1 + wave2 + wave3;
+      // Combine waves for gentle movement
+      vec2 distortion = wave1 + wave2;
       vec2 distortedUV = st + distortion;
       
-      // Create flowing noise patterns
-      float noise1 = fbm(distortedUV * 2.0 + t * 0.3);
-      float noise2 = fbm(distortedUV * 1.5 - t * 0.2);
-      float noise3 = fbm(distortedUV * 3.0 + t * 0.5);
+      // Subtle noise patterns
+      float noise1 = fbm(distortedUV * 1.2 + t * 0.3);
+      float noise2 = fbm(distortedUV * 0.8 - t * 0.2);
       
-      // Create aurora-like color bands
-      float band1 = sin(st.y * 8.0 + noise1 * 3.0 + t) * 0.5 + 0.5;
-      float band2 = sin(st.y * 6.0 + noise2 * 4.0 + t * 1.3) * 0.5 + 0.5;
-      float band3 = sin(st.y * 10.0 + noise3 * 2.0 + t * 0.8) * 0.5 + 0.5;
+      // Gentle color bands
+      float band1 = sin(st.y * 3.0 + noise1 * 2.0 + t) * 0.5 + 0.5;
+      float band2 = sin(st.y * 2.0 + noise2 * 2.5 + t * 1.3) * 0.5 + 0.5;
       
-      // Dynamic color palette that shifts over time
-      vec3 color1 = vec3(0.1, 0.05, 0.2); // Deep purple base
-      vec3 color2 = vec3(0.0, 0.3, 0.6);  // Ocean blue
-      vec3 color3 = vec3(0.2, 0.1, 0.4);  // Royal purple
-      vec3 color4 = vec3(0.0, 0.5, 0.3);  // Emerald
-      vec3 color5 = vec3(0.6, 0.2, 0.8);  // Magenta
-      vec3 color6 = vec3(0.0, 0.4, 0.8);  // Bright blue
+      // Subtle color palette
+      vec3 color1 = vec3(0.08, 0.05, 0.15); // Dark purple base
+      vec3 color2 = vec3(0.0, 0.15, 0.3);   // Subtle blue
+      vec3 color3 = vec3(0.1, 0.02, 0.2);   // Muted purple
+      vec3 color4 = vec3(0.0, 0.2, 0.15);   // Subtle teal
       
-      // Time-based color shifting
-      float colorShift = sin(t * 0.5) * 0.5 + 0.5;
-      color2 = mix(color2, color6, colorShift);
-      color4 = mix(color4, color5, sin(t * 0.3) * 0.5 + 0.5);
+      // Gentle color mixing
+      vec3 finalColor = mix(color1, color2, band1 * noise1 * 0.6);
+      finalColor = mix(finalColor, color3, band2 * noise2 * 0.4);
       
-      // Blend colors based on noise and bands
-      vec3 finalColor = mix(color1, color2, band1 * noise1);
-      finalColor = mix(finalColor, color3, band2 * noise2 * 0.7);
-      finalColor = mix(finalColor, color4, band3 * noise3 * 0.5);
+      // Subtle highlights
+      float highlight = smoothstep(0.8, 1.0, noise1 + noise2);
+      finalColor += highlight * 0.05;
       
-      // Add subtle highlights
-      float highlight = smoothstep(0.7, 1.0, noise1 + noise2);
-      finalColor += highlight * 0.1;
-      
-      // Add depth with radial gradient
-      float radial = 1.0 - length(st - 0.5) * 0.8;
+      // Gentle radial gradient
+      float radial = 1.0 - length(st - 0.5) * 0.4;
       finalColor *= radial;
       
-      // Enhance contrast and saturation
-      finalColor = pow(finalColor, vec3(0.9));
-      finalColor *= 1.2;
+      // Much more subtle final output
+      finalColor = pow(finalColor, vec3(1.1));
+      finalColor *= 0.8; // Reduce overall intensity
       
       gl_FragColor = vec4(finalColor, 1.0);
     }
@@ -144,23 +128,17 @@ function AuroraBackground() {
   );
 }
 
-// Constellation of floating particles that form patterns
+// Subtle constellation with fewer particles
 function ConstellationField() {
   const particlesRef = useRef();
   
   const positions = useMemo(() => {
-    const particleCount = 60;
+    const particleCount = 30; // Reduced particle count
     const pos = new Float32Array(particleCount * 3);
     
-    // Create constellation patterns
     for (let i = 0; i < particleCount; i++) {
-      // Distribute particles in constellation-like clusters
-      const cluster = Math.floor(i / 12);
-      const clusterX = (cluster % 3 - 1) * 3;
-      const clusterY = (Math.floor(cluster / 3) - 1) * 2;
-      
-      pos[i * 3] = clusterX + (Math.random() - 0.5) * 2;
-      pos[i * 3 + 1] = clusterY + (Math.random() - 0.5) * 1.5;
+      pos[i * 3] = (Math.random() - 0.5) * 4;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 3;
       pos[i * 3 + 2] = (Math.random() - 0.5) * 2;
     }
     
@@ -176,13 +154,14 @@ function ConstellationField() {
         const originalX = positions[i];
         const originalY = positions[i + 1];
         
-        positions[i] = originalX + Math.sin(time * 0.5 + originalX) * 0.1;
-        positions[i + 1] = originalY + Math.cos(time * 0.3 + originalY) * 0.08;
-        positions[i + 2] += Math.sin(time * 0.8 + originalX + originalY) * 0.02;
+        // Gentle movement
+        positions[i] = originalX + Math.sin(time * 0.2 + originalX) * 0.05;
+        positions[i + 1] = originalY + Math.cos(time * 0.15 + originalY) * 0.03;
+        positions[i + 2] += Math.sin(time * 0.3 + originalX + originalY) * 0.01;
       }
       
       particlesRef.current.geometry.attributes.position.needsUpdate = true;
-      particlesRef.current.rotation.z = Math.sin(time * 0.1) * 0.1;
+      particlesRef.current.rotation.z = Math.sin(time * 0.02) * 0.05;
     }
   });
 
@@ -197,64 +176,27 @@ function ConstellationField() {
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.03}
+        size={0.02}
         color="#ffffff"
         transparent
-        opacity={0.6}
+        opacity={0.4}
         sizeAttenuation={true}
       />
     </points>
   );
 }
 
-// Morphing geometric shapes that add visual interest
-function MorphingGeometry() {
-  const meshRef = useRef();
-  
-  useFrame((state) => {
-    if (meshRef.current) {
-      const time = state.clock.elapsedTime;
-      
-      // Morph the geometry
-      meshRef.current.rotation.x = Math.sin(time * 0.3) * 0.2;
-      meshRef.current.rotation.y = time * 0.1;
-      meshRef.current.rotation.z = Math.cos(time * 0.2) * 0.1;
-      
-      // Pulsing scale
-      const scale = 1 + Math.sin(time * 0.4) * 0.2;
-      meshRef.current.scale.setScalar(scale);
-      
-      // Floating movement
-      meshRef.current.position.y = Math.sin(time * 0.2) * 0.5;
-      meshRef.current.position.x = Math.cos(time * 0.15) * 0.3;
-    }
-  });
-
-  return (
-    <mesh ref={meshRef} position={[0, 0, -2]}>
-      <torusGeometry args={[1, 0.3, 16, 100]} />
-      <meshBasicMaterial 
-        color="#007aff" 
-        transparent 
-        opacity={0.05}
-        wireframe={true}
-      />
-    </mesh>
-  );
-}
-
 function ThreeBackground() {
   return (
-    <div className="fixed inset-0 w-screen h-screen">
+    <div className="fixed inset-0 w-screen h-screen" style={{ zIndex: -1 }}>
       <Canvas
         camera={{ position: [0, 0, 1], fov: 75 }}
         style={{ background: 'transparent' }}
-        dpr={[1, 2]}
+        dpr={[1, 1.5]}
         performance={{ min: 0.5 }}
       >
         <AuroraBackground />
         <ConstellationField />
-        <MorphingGeometry />
       </Canvas>
     </div>
   );

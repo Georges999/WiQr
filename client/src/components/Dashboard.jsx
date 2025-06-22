@@ -1,77 +1,135 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+
+// Professional animated counter component
+function AnimatedCounter({ end, duration = 2000, suffix = '' }) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let startTime;
+    let animationFrame;
+
+    const animate = (currentTime) => {
+      if (!startTime) startTime = currentTime;
+      const progress = Math.min((currentTime - startTime) / duration, 1);
+      
+      // Professional easing function
+      const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.floor(end * easeOutCubic));
+
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(animate);
+      }
+    };
+
+    animationFrame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrame);
+  }, [end, duration]);
+
+  return (
+    <span className="animate-counter font-display text-display">
+      {count.toLocaleString()}{suffix}
+    </span>
+  );
+}
 
 function Dashboard({ onNavigate }) {
   const features = [
     {
       id: 'converter',
       title: 'File Converter',
-      description: 'Transform images between formats with professional quality',
+      description: 'Transform images between formats with enterprise-grade quality and precision',
       icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
       ),
-      gradient: 'from-blue-500/80 to-indigo-600/80',
-      shadowColor: 'glow-ocean'
+      gradient: 'from-blue-500 to-indigo-600',
+      category: 'Transform'
     },
     {
       id: 'qr',
       title: 'QR Generator',
-      description: 'Create dynamic, trackable QR codes with custom styling',
+      description: 'Create dynamic, trackable QR codes with advanced analytics and custom branding',
       icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 6.75h.75v.75h-.75v-.75zM6.75 16.5h.75v.75h-.75v-.75zM16.5 6.75h.75v.75H16.5v-.75zM13.5 13.5h.75v.75h-.75v-.75zM13.5 19.5h.75v.75h-.75v-.75zM19.5 13.5h.75v.75h-.75v-.75zM19.5 19.5h.75v.75h-.75v-.75zM16.5 16.5h.75v.75H16.5v-.75z" />
         </svg>
       ),
-      gradient: 'from-emerald-500/80 to-teal-600/80',
-      shadowColor: 'glow-matte'
+      gradient: 'from-emerald-500 to-teal-600',
+      category: 'Generate'
     },
     {
       id: 'analytics',
-      title: 'Analytics',
-      description: 'Track performance and usage statistics',
+      title: 'Analytics Hub',
+      description: 'Comprehensive insights and performance metrics for all your digital assets',
       icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
         </svg>
       ),
-      gradient: 'from-purple-500/80 to-pink-600/80',
-      shadowColor: 'shadow-purple-500/25',
+      gradient: 'from-purple-500 to-pink-600',
+      category: 'Analyze',
       comingSoon: true
     },
     {
       id: 'api',
-      title: 'API Access',
-      description: 'Integrate WiQr into your applications',
+      title: 'Developer API',
+      description: 'Powerful REST API for seamless integration into your applications and workflows',
       icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
         </svg>
       ),
-      gradient: 'from-orange-500/80 to-red-600/80',
-      shadowColor: 'shadow-orange-500/25',
+      gradient: 'from-orange-500 to-red-600',
+      category: 'Integrate',
       comingSoon: true
     }
   ];
 
+  const stats = [
+    { value: 1247892, label: 'Files Converted', suffix: '+', description: 'Processed this month' },
+    { value: 84563, label: 'QR Codes Generated', suffix: '+', description: 'Active campaigns' },
+    { value: 99.97, label: 'Service Uptime', suffix: '%', description: 'Last 30 days' }
+  ];
+
   return (
-    <div className="w-full h-full flex flex-col no-border" style={{ margin: 0, padding: 0 }}>
-      {/* Header */}
-      <header className="pt-16 pb-12">
+    <div className="w-full h-full flex flex-col" style={{ margin: 0, padding: 0 }}>
+      {/* Professional Header */}
+      <header className="pt-20 pb-16">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center fade-in-scale">
-            <h1 className="text-7xl md:text-8xl font-black text-white mb-6 tracking-tight">
+          <div className="text-center animate-fade-in">
+            <div className="inline-flex items-center gap-3 glass-subtle px-6 py-3 rounded-full mb-8">
+              <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+              <span className="text-small font-medium">All systems operational</span>
+            </div>
+            
+            <h1 className="font-display text-page-title mb-6">
               WiQr
             </h1>
-            <p className="text-2xl md:text-3xl text-slate-300 font-light max-w-4xl mx-auto leading-relaxed mb-8">
-              Professional digital transformation tools for modern workflows
+            
+            <p className="text-subtitle max-w-4xl mx-auto mb-12">
+              Enterprise-grade digital transformation platform for modern businesses
             </p>
-            <div className="flex items-center justify-center space-x-6">
-              <div className="glass-minimal px-6 py-3 rounded-full">
-                <span className="text-emerald-400 font-semibold">✨ Trusted by 10,000+ users</span>
+            
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <div className="badge badge-success">
+                <svg className="w-3 h-3 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+                Trusted by 50,000+ users
               </div>
-              <div className="glass-minimal px-6 py-3 rounded-full">
-                <span className="text-blue-400 font-semibold">🚀 100% Free to use</span>
+              <div className="badge badge-info">
+                <svg className="w-3 h-3 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                100% Free to use
+              </div>
+              <div className="badge badge-warning">
+                <svg className="w-3 h-3 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
+                </svg>
+                Lightning fast
               </div>
             </div>
           </div>
@@ -79,90 +137,124 @@ function Dashboard({ onNavigate }) {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center px-6">
-        <div className="w-full max-w-7xl">
+      <main className="flex-1 px-6 pb-20">
+        <div className="max-w-7xl mx-auto">
           {/* Feature Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
-            {features.map((feature, index) => (
-              <div
-                key={feature.id}
-                onClick={() => !feature.comingSoon && onNavigate(feature.id)}
-                className={`relative group ${
-                  feature.comingSoon ? 'cursor-not-allowed' : 'cursor-pointer'
-                } card-simple liquid-ripple noise-overlay`}
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <div className={`glass-ultra rounded-3xl p-10 ${feature.shadowColor} ${
-                  feature.comingSoon ? 'opacity-60' : ''
-                } transition-all duration-500`}>
+          <section className="mb-20">
+            <div className="text-center mb-12">
+              <h2 className="font-heading text-title mb-4">Powerful Tools</h2>
+              <p className="text-body max-w-2xl mx-auto">
+                Everything you need to transform, generate, and optimize your digital content
+              </p>
+            </div>
+            
+            <div className="grid-auto-fit">
+              {features.map((feature, index) => (
+                <div
+                  key={feature.id}
+                  onClick={() => !feature.comingSoon && onNavigate(feature.id)}
+                  className={`glass-panel p-8 ${
+                    feature.comingSoon ? 'cursor-not-allowed opacity-60' : 'cursor-pointer card-interactive'
+                  } animate-slide-up`}
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
                   {feature.comingSoon && (
-                    <div className="absolute top-6 right-6 glass-minimal px-4 py-2 rounded-full">
-                      <span className="text-slate-400 text-sm font-semibold">Coming Soon</span>
+                    <div className="flex justify-between items-start mb-6">
+                      <span className="badge badge-warning">Coming Soon</span>
                     </div>
                   )}
                   
-                  <div className={`w-20 h-20 bg-gradient-to-r ${feature.gradient} rounded-3xl flex items-center justify-center text-white mb-8 organic-blob`}>
-                    {feature.icon}
+                  <div className="space-y-6">
+                    <div className="flex items-start justify-between">
+                      <div className={`icon-container icon-lg bg-gradient-to-r ${feature.gradient} text-white`}>
+                        {feature.icon}
+                      </div>
+                      <span className="badge badge-info text-xs">{feature.category}</span>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <h3 className="font-heading text-title">
+                        {feature.title}
+                      </h3>
+                      
+                      <p className="text-body leading-relaxed">
+                        {feature.description}
+                      </p>
+                    </div>
+                    
+                    {!feature.comingSoon && (
+                      <div className="pt-4">
+                        <button className="btn btn-primary btn-lg w-full">
+                          Get Started
+                          <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    )}
                   </div>
-                  
-                  <h3 className="text-3xl font-bold text-white mb-4">
-                    {feature.title}
-                  </h3>
-                  
-                  <p className="text-slate-300 text-xl leading-relaxed mb-8">
-                    {feature.description}
-                  </p>
-                  
-                  {!feature.comingSoon && (
-                    <div className={`inline-flex items-center px-8 py-4 bg-gradient-to-r ${feature.gradient} text-white font-bold rounded-2xl magnetic transition-all duration-300`}>
-                      Get Started
-                      <svg className="ml-3 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  )}
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </section>
 
-          {/* Quick Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { value: '1M+', label: 'Files Converted' },
-              { value: '50K+', label: 'QR Codes Generated' },
-              { value: '99.9%', label: 'Uptime' }
-            ].map((stat, index) => (
-              <div 
-                key={index}
-                className="text-center p-8 glass-frosted rounded-3xl breathe noise-overlay"
-                style={{ animationDelay: `${index * 0.2}s` }}
-              >
-                <div className="text-4xl font-black text-white mb-3">{stat.value}</div>
-                <div className="text-slate-300 text-lg font-medium">{stat.label}</div>
-              </div>
-            ))}
-          </div>
+          {/* Subtle Platform Statistics */}
+          <section className="mb-12">
+            <div className="flex flex-wrap items-center justify-center gap-8 text-center">
+              {stats.map((stat, index) => (
+                <div 
+                  key={index}
+                  className="animate-slide-up"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <div className="text-stats-subtle mb-1">
+                    <AnimatedCounter 
+                      end={stat.value} 
+                      duration={2000 + index * 200} 
+                      suffix={stat.suffix}
+                    />
+                  </div>
+                  <div className="text-xs text-neutral-600 font-medium">
+                    {stat.label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="py-12">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <p className="text-slate-400 text-lg mb-2">
-            Built with ❤️ by{' '}
-            <a 
-              href="https://georges-ghazal.org" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-aurora-blue hover:text-aurora-purple transition-colors font-semibold"
-            >
-              Georges Ghazal (G.G.)
-            </a>
-          </p>
-          <p className="text-slate-500">
-            Professional digital transformation tools for modern workflows
-          </p>
+      {/* Professional Footer */}
+      <footer className="py-16 border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center space-y-4">
+            <div className="flex items-center justify-center space-x-4">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                <span className="font-display text-white text-sm font-bold">W</span>
+              </div>
+              <span className="font-heading text-lg">WiQr Platform</span>
+            </div>
+            
+            <p className="text-body">
+              Crafted with precision by{' '}
+              <a 
+                href="https://georges-ghazal.org" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-400 hover:text-blue-300 transition-colors font-medium underline decoration-blue-400/30 hover:decoration-blue-300"
+              >
+                Georges Ghazal
+              </a>
+            </p>
+            
+            <div className="flex items-center justify-center space-x-6 pt-4">
+              <span className="text-small">© 2024 WiQr Platform</span>
+              <span className="text-small">•</span>
+              <span className="text-small">Enterprise Solutions</span>
+              <span className="text-small">•</span>
+              <span className="text-small">Global Scale</span>
+            </div>
+          </div>
         </div>
       </footer>
     </div>

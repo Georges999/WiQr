@@ -14,7 +14,9 @@ const qrCodeSchema = new mongoose.Schema({
   shortUrl: {
     type: String,
     required: true,
-    default: shortid.generate
+    default: function() {
+      return `http://localhost:3001/${shortid.generate()}`;
+    }
   },
   clicks: {
     type: Number,
