@@ -10,13 +10,15 @@ require('dotenv').config({ path: path.resolve(__dirname, '.env') });
 const app = express();
 const port = 3001;
 
-// Database Connection
-mongoose.connect(process.env.MONGODB_URI)
+// Database Connection - use default local MongoDB if no env variable
+const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/wiqr';
+mongoose.connect(mongoUri)
   .then(() => console.log('MongoDB connected successfully.'))
   .catch(err => console.error('MongoDB connection error:', err));
 
 // Middleware
 app.use(cors());
+app.use(express.json()); // Middleware to parse JSON bodies
 const upload = multer({ storage: multer.memoryStorage() }); // Store files in memory
 
 // Routes
@@ -49,8 +51,6 @@ app.post('/convert', upload.single('file'), async (req, res) => {
   }
 });
 
-app.use(express.json()); // Middleware to parse JSON bodies
-
 // Define Routes
 app.use('/api/qr', require('./routes/qr'));
 
@@ -74,7 +74,6 @@ app.get('/:shortUrl', async (req, res) => {
   }
 });
 
-
 app.listen(port, () => {
-  console.log(`Server listening at http://localhost:${port}`);
+  console.log(`🚀 WiQr Server listening at http://localhost:${port}`);
 });

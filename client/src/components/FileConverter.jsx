@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
 
-function FileConverter() {
+function FileConverter({ onBack }) {
   const [file, setFile] = useState(null);
   const [format, setFormat] = useState('jpeg');
   const [isLoading, setIsLoading] = useState(false);
@@ -17,7 +17,10 @@ function FileConverter() {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ 
     onDrop, 
-    multiple: false 
+    multiple: false,
+    accept: {
+      'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.webp', '.bmp', '.tiff']
+    }
   });
 
   const handleConvert = async () => {
@@ -52,7 +55,7 @@ function FileConverter() {
       window.URL.revokeObjectURL(url);
 
       setSuccess('File converted and download started!');
-      setFile(null); // Clear the file after successful conversion
+      setFile(null);
     } catch (err) {
       setError('Error during file conversion. Please try again.');
       console.error('Conversion error:', err);
@@ -61,59 +64,163 @@ function FileConverter() {
     }
   };
 
+  const formatOptions = [
+    { value: 'jpeg', label: 'JPEG', desc: 'Best for photos' },
+    { value: 'png', label: 'PNG', desc: 'Best for transparency' },
+    { value: 'webp', label: 'WebP', desc: 'Modern web format' },
+    { value: 'gif', label: 'GIF', desc: 'Best for animations' }
+  ];
+
   return (
-    <section className="w-full max-w-3xl mx-auto p-4">
-      <div
-        {...getRootProps()}
-        className={`p-12 border-2 border-dashed rounded-lg text-center cursor-pointer transition-colors duration-300 ${
-          isDragActive
-            ? 'border-purple-500 bg-purple-900 bg-opacity-20'
-            : 'border-gray-600 hover:border-purple-400 hover:bg-gray-800'
-        }`}
-      >
-        <input {...getInputProps()} />
-        {
-          isDragActive ?
-            <p className="text-purple-300 text-lg">Drop the file here...</p> :
-            <p className="text-gray-400">Drag & drop a file here, or click to select</p>
-        }
-      </div>
-      
-      {file && (
-        <aside className="mt-6 p-4 bg-gray-800 bg-opacity-50 rounded-lg">
-          <h4 className="text-lg font-semibold text-white">Selected File:</h4>
-          <p className="text-sm text-gray-300 mt-1">{file.name} - {Math.round(file.size / 1024)} KB</p>
-        </aside>
-      )}
-
-      <div className="mt-6 flex items-center justify-between">
-        <div>
-          <label htmlFor="format" className="block text-sm font-medium text-gray-300">Convert to:</label>
-          <select
-            id="format"
-            name="format"
-            value={format}
-            onChange={(e) => setFormat(e.target.value.toLowerCase())}
-            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-600 bg-gray-800 text-white focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm rounded-md"
+    <div className="min-h-screen flex flex-col no-border">
+      {/* Header with Back Button */}
+      <header className="pt-12 pb-8">
+        <div className="max-w-5xl mx-auto px-6">
+          <button
+            onClick={onBack}
+            className="inline-flex items-center px-6 py-3 text-slate-300 hover:text-white font-medium transition-all duration-300 glass-minimal rounded-2xl mb-8 magnetic"
           >
-            <option value="jpeg">JPEG</option>
-            <option value="png">PNG</option>
-            <option value="webp">WEBP</option>
-            <option value="gif">GIF</option>
-          </select>
+            <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to Dashboard
+          </button>
+          
+          <div className="text-center fade-in-scale">
+            <h1 className="text-6xl md:text-7xl font-black text-white mb-6">File Converter</h1>
+            <p className="text-2xl text-slate-300 font-light">Transform your images with professional quality</p>
+          </div>
         </div>
-        <button
-          onClick={handleConvert}
-          disabled={!file || isLoading}
-          className="px-8 py-3 bg-purple-600 text-white font-bold rounded-lg hover:bg-purple-700 disabled:bg-gray-500 disabled:cursor-not-allowed transition-all duration-300 shadow-lg"
-        >
-          {isLoading ? 'Converting...' : 'Convert & Download'}
-        </button>
-      </div>
+      </header>
 
-      {error && <p className="mt-4 text-red-400 text-center">{error}</p>}
-      {success && <p className="mt-4 text-green-400 text-center">{success}</p>}
-    </section>
+      {/* Main Content */}
+      <main className="flex-1 flex items-center justify-center px-6">
+        <div className="w-full max-w-5xl space-y-10">
+          {/* Upload Area */}
+          <div
+            {...getRootProps()}
+            className={`relative group cursor-pointer morph-subtle liquid-ripple noise-overlay ${
+              isDragActive ? 'scale-105' : ''
+            }`}
+          >
+            <input {...getInputProps()} />
+            <div className={`glass-ultra rounded-3xl p-20 text-center transition-all duration-500 ${
+              isDragActive ? 'glow-ocean' : ''
+            }`}>
+              <div className="space-y-8">
+                <div className={`mx-auto w-32 h-32 bg-gradient-to-r from-blue-500/80 to-indigo-600/80 rounded-3xl flex items-center justify-center organic-blob ${
+                  isDragActive ? 'pulse-matte' : ''
+                }`}>
+                  <svg className="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-3xl font-bold text-white mb-4">
+                    {isDragActive ? 'Drop your file here' : 'Choose or drag your file'}
+                  </h3>
+                  <p className="text-slate-300 text-xl">
+                    Support for JPEG, PNG, WebP, GIF and more formats
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Selected File Preview */}
+          {file && (
+            <div className="glass-frosted rounded-3xl p-8 fade-in-scale">
+              <div className="flex items-center space-x-6">
+                <div className="w-16 h-16 bg-emerald-500/80 rounded-2xl flex items-center justify-center">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-bold text-white text-xl">File Selected</h4>
+                  <p className="text-slate-300 font-medium text-lg">{file.name} • {Math.round(file.size / 1024)} KB</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Format Selection & Convert */}
+          <div className="glass-ultra rounded-3xl p-10 noise-overlay">
+            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between space-y-8 lg:space-y-0 lg:space-x-10">
+              {/* Format Selection */}
+              <div className="flex-1">
+                <label className="block text-2xl font-bold text-white mb-6">Convert to:</label>
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  {formatOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() => setFormat(option.value)}
+                      className={`p-6 rounded-3xl transition-all duration-300 text-left magnetic ${
+                        format === option.value
+                          ? 'glass-frosted glow-ocean'
+                          : 'glass-minimal hover:glass-frosted'
+                      }`}
+                    >
+                      <div className="font-bold text-white text-xl">{option.label}</div>
+                      <div className="text-slate-300 mt-2">{option.desc}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Convert Button */}
+              <div className="lg:w-80">
+                <button
+                  onClick={handleConvert}
+                  disabled={!file || isLoading}
+                  className={`w-full px-10 py-6 rounded-3xl font-bold text-xl text-white transition-all duration-500 magnetic ${
+                    !file || isLoading
+                      ? 'glass-minimal opacity-50 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-blue-500/80 to-indigo-600/80 glow-ocean morph-subtle'
+                  }`}
+                >
+                  {isLoading ? (
+                    <div className="flex items-center justify-center space-x-3">
+                      <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Converting...</span>
+                    </div>
+                  ) : (
+                    'Convert & Download'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Status Messages */}
+          {error && (
+            <div className="glass-frosted rounded-3xl p-8 fade-in-scale">
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-red-500/80 rounded-2xl flex items-center justify-center flex-shrink-0">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </div>
+                <p className="text-red-300 font-semibold text-xl">{error}</p>
+              </div>
+            </div>
+          )}
+          
+          {success && (
+            <div className="glass-frosted rounded-3xl p-8 fade-in-scale">
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-emerald-500/80 rounded-2xl flex items-center justify-center flex-shrink-0">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <p className="text-emerald-300 font-semibold text-xl">{success}</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </main>
+    </div>
   );
 }
 
