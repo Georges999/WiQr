@@ -149,8 +149,19 @@ function Dashboard({ onNavigate }) {
       {/* Footer */}
       <footer className="py-12">
         <div className="max-w-7xl mx-auto px-6 text-center">
-          <p className="text-slate-400 text-lg">
-            Built with ❤️ for seamless digital experiences
+          <p className="text-slate-400 text-lg mb-2">
+            Built with ❤️ by{' '}
+            <a 
+              href="https://georges-ghazal.org" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-aurora-blue hover:text-aurora-purple transition-colors font-semibold"
+            >
+              Georges Ghazal (G.G.)
+            </a>
+          </p>
+          <p className="text-slate-500">
+            Professional digital transformation tools for modern workflows
           </p>
         </div>
       </footer>

@@ -192,111 +192,123 @@ function QrCodeGenerator({ onBack }) {
 
         {/* Main Content */}
         <main className="flex-1 px-6 pb-8">
-          <div className="w-full max-w-6xl mx-auto space-y-8">
+          <div className="w-full max-w-7xl mx-auto space-y-8">
             {/* Create Form */}
-            <form onSubmit={handleSubmit} className="glass-ultra border border-white/20 rounded-3xl p-8 shadow-xl card-simple">
-              <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
-                <div className="w-8 h-8 bg-gradient-to-r from-aurora-emerald to-aurora-blue rounded-lg mr-3"></div>
+            <div className="glass-ultra rounded-3xl p-10 shadow-xl card-simple liquid-ripple noise-overlay">
+              <h3 className="text-3xl font-bold text-white mb-8 flex items-center">
+                <div className="w-20 h-20 bg-gradient-to-r from-aurora-emerald to-aurora-blue rounded-3xl flex items-center justify-center text-white mr-6">
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+                  </svg>
+                </div>
                 Create New QR Code
               </h3>
               
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-300 mb-3">QR Code Name</label>
-                    <input
-                      type="text"
-                      placeholder="My Awesome QR Code"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="w-full p-4 glass-minimal border border-white/20 rounded-xl text-white placeholder-slate-400 focus:border-aurora-emerald focus:ring-2 focus:ring-aurora-emerald/30 transition-all"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-300 mb-3">Target URL *</label>
-                    <input
-                      type="url"
-                      placeholder="https://example.com"
-                      value={originalUrl}
-                      onChange={(e) => setOriginalUrl(e.target.value)}
-                      required
-                      className="w-full p-4 glass-minimal border border-white/20 rounded-xl text-white placeholder-slate-400 focus:border-aurora-blue focus:ring-2 focus:ring-aurora-blue/30 transition-all"
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
+              <form onSubmit={handleSubmit} className="space-y-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <div className="space-y-6">
                     <div>
-                      <label className="block text-sm font-semibold text-slate-300 mb-3">Foreground Color</label>
-                      <div className="flex items-center space-x-3">
-                        <input 
-                          type="color" 
-                          value={fgColor} 
-                          onChange={(e) => setFgColor(e.target.value)} 
-                          className="w-14 h-14 rounded-xl border-2 border-white/20 cursor-pointer bg-transparent"
-                        />
-                        <span className="text-sm text-slate-300 font-mono">{fgColor}</span>
-                      </div>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-slate-300 mb-3">Background Color</label>
-                      <div className="flex items-center space-x-3">
-                        <input 
-                          type="color" 
-                          value={bgColor} 
-                          onChange={(e) => setBgColor(e.target.value)} 
-                          className="w-14 h-14 rounded-xl border-2 border-white/20 cursor-pointer bg-transparent"
-                        />
-                        <span className="text-sm text-slate-300 font-mono">{bgColor}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Live Preview */}
-                <div className="flex flex-col items-center justify-center">
-                  <div className="glass-frosted rounded-2xl p-6 mb-4">
-                    <h4 className="text-lg font-semibold text-white mb-4 text-center">Live Preview</h4>
-                    {originalUrl ? (
-                      <QRCodeSVG 
-                        value={originalUrl} 
-                        size={200} 
-                        fgColor={fgColor} 
-                        bgColor={bgColor}
-                        level="M"
-                        includeMargin={true}
+                      <label className="block text-xl font-semibold text-slate-300 mb-4">QR Code Name</label>
+                      <input
+                        type="text"
+                        placeholder="My Awesome QR Code"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="w-full p-4 glass-minimal border border-white/20 rounded-xl text-white placeholder-slate-400 focus:border-aurora-emerald focus:ring-2 focus:ring-aurora-emerald/30 transition-all text-lg"
                       />
-                    ) : (
-                      <div className="w-[200px] h-[200px] glass-minimal rounded-xl flex items-center justify-center">
-                        <p className="text-slate-400 text-center text-sm">Enter URL to see preview</p>
+                    </div>
+                    <div>
+                      <label className="block text-xl font-semibold text-slate-300 mb-4">Target URL *</label>
+                      <input
+                        type="url"
+                        placeholder="https://example.com"
+                        value={originalUrl}
+                        onChange={(e) => setOriginalUrl(e.target.value)}
+                        required
+                        className="w-full p-4 glass-minimal border border-white/20 rounded-xl text-white placeholder-slate-400 focus:border-aurora-blue focus:ring-2 focus:ring-aurora-blue/30 transition-all text-lg"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-xl font-semibold text-slate-300 mb-4">Foreground Color</label>
+                        <div className="flex items-center space-x-4">
+                          <input 
+                            type="color" 
+                            value={fgColor} 
+                            onChange={(e) => setFgColor(e.target.value)} 
+                            className="w-16 h-16 rounded-xl border-2 border-white/20 cursor-pointer bg-transparent"
+                          />
+                          <span className="text-lg text-slate-300 font-mono">{fgColor}</span>
+                        </div>
                       </div>
-                    )}
+                      <div>
+                        <label className="block text-xl font-semibold text-slate-300 mb-4">Background Color</label>
+                        <div className="flex items-center space-x-4">
+                          <input 
+                            type="color" 
+                            value={bgColor} 
+                            onChange={(e) => setBgColor(e.target.value)} 
+                            className="w-16 h-16 rounded-xl border-2 border-white/20 cursor-pointer bg-transparent"
+                          />
+                          <span className="text-lg text-slate-300 font-mono">{bgColor}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Live Preview */}
+                  <div className="flex flex-col items-center justify-center">
+                    <div className="glass-frosted rounded-2xl p-8 mb-6">
+                      <h4 className="text-xl font-semibold text-white mb-6 text-center">Live Preview</h4>
+                      {originalUrl ? (
+                        <QRCodeSVG 
+                          value={originalUrl} 
+                          size={200} 
+                          fgColor={fgColor} 
+                          bgColor={bgColor}
+                          level="M"
+                          includeMargin={true}
+                        />
+                      ) : (
+                        <div className="w-[200px] h-[200px] glass-minimal rounded-xl flex items-center justify-center">
+                          <p className="text-slate-400 text-center">Enter URL to see preview</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {error && (
-                <div className="mb-6 p-4 glass-minimal border border-red-400/30 rounded-xl">
-                  <p className="text-red-300">{error}</p>
+                {error && (
+                  <div className="p-6 glass-minimal border border-red-400/30 rounded-xl">
+                    <p className="text-red-300 text-lg">{error}</p>
+                  </div>
+                )}
+
+                <div className="pt-4">
+                  <button 
+                    type="submit" 
+                    disabled={isLoading || !originalUrl}
+                    className="w-full py-5 bg-gradient-to-r from-aurora-emerald to-aurora-blue text-white font-bold text-xl rounded-2xl hover:from-aurora-emerald/80 hover:to-aurora-blue/80 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-aurora-emerald/25"
+                  >
+                    {isLoading ? 'Creating QR Code...' : 'Create QR Code'}
+                  </button>
                 </div>
-              )}
-
-              <button 
-                type="submit" 
-                disabled={isLoading || !originalUrl}
-                className="w-full py-4 bg-gradient-to-r from-aurora-emerald to-aurora-blue text-white font-bold text-lg rounded-xl hover:from-aurora-emerald/80 hover:to-aurora-blue/80 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-aurora-emerald/25"
-              >
-                {isLoading ? 'Creating QR Code...' : 'Create QR Code'}
-              </button>
-            </form>
+              </form>
+            </div>
 
             {/* QR Codes Grid */}
             {qrCodes.length > 0 && (
-              <div className="glass-ultra border border-white/20 rounded-3xl p-8">
-                <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
-                  <div className="w-8 h-8 bg-gradient-to-r from-aurora-purple to-aurora-blue rounded-lg mr-3"></div>
+              <div className="glass-ultra border border-white/20 rounded-3xl p-10 shadow-xl">
+                <h3 className="text-3xl font-bold text-white mb-8 flex items-center">
+                  <div className="w-20 h-20 bg-gradient-to-r from-aurora-purple to-aurora-blue rounded-3xl flex items-center justify-center text-white mr-6">
+                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a1 1 0 011-1h1m-1 1v1h1m-1-1h1m0 0V5a1 1 0 011-1h1M9 7v1m0 0v1h1m-1-1h1m0 0h1" />
+                    </svg>
+                  </div>
                   Your QR Codes ({qrCodes.length})
                 </h3>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {qrCodes.map((qr) => (
                     <div key={qr._id} className="glass-frosted rounded-2xl p-6 card-simple">
                       <div className="flex justify-between items-start mb-4">
@@ -346,6 +358,26 @@ function QrCodeGenerator({ onBack }) {
             )}
           </div>
         </main>
+
+        {/* Footer */}
+        <footer className="py-12">
+          <div className="max-w-7xl mx-auto px-6 text-center">
+            <p className="text-slate-400 text-lg mb-2">
+              Built with ❤️ by{' '}
+              <a 
+                href="https://georges-ghazal.org" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-aurora-blue hover:text-aurora-purple transition-colors font-semibold"
+              >
+                Georges Ghazal (G.G.)
+              </a>
+            </p>
+            <p className="text-slate-500">
+              Professional digital transformation tools for modern workflows
+            </p>
+          </div>
+        </footer>
       </div>
 
       {editingQr && (
