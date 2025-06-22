@@ -214,7 +214,7 @@ function QrCodeGenerator({ onBack }) {
                         placeholder="My Awesome QR Code"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        className="w-full p-4 glass-minimal border border-white/20 rounded-xl text-white placeholder-slate-400 focus:border-aurora-emerald focus:ring-2 focus:ring-aurora-emerald/30 transition-all text-lg"
+                        className="w-full p-4 bg-slate-800/80 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 transition-all text-lg focus:bg-slate-700/80"
                       />
                     </div>
                     <div>
@@ -225,32 +225,38 @@ function QrCodeGenerator({ onBack }) {
                         value={originalUrl}
                         onChange={(e) => setOriginalUrl(e.target.value)}
                         required
-                        className="w-full p-4 glass-minimal border border-white/20 rounded-xl text-white placeholder-slate-400 focus:border-aurora-blue focus:ring-2 focus:ring-aurora-blue/30 transition-all text-lg"
+                        className="w-full p-4 bg-slate-800/80 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 transition-all text-lg focus:bg-slate-700/80"
                       />
                     </div>
                     <div className="grid grid-cols-2 gap-6">
                       <div>
                         <label className="block text-xl font-semibold text-slate-300 mb-4">Foreground Color</label>
-                        <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-3">
                           <input 
                             type="color" 
                             value={fgColor} 
                             onChange={(e) => setFgColor(e.target.value)} 
-                            className="w-16 h-16 rounded-xl border-2 border-white/20 cursor-pointer bg-transparent"
+                            className="w-12 h-12 rounded-lg border-2 border-slate-600 cursor-pointer"
+                            style={{ backgroundColor: fgColor }}
                           />
-                          <span className="text-lg text-slate-300 font-mono">{fgColor}</span>
+                          <div className="bg-slate-800/90 px-3 py-2 rounded-lg border border-slate-600 flex-1">
+                            <span className="text-sm text-slate-300 font-mono">{fgColor}</span>
+                          </div>
                         </div>
                       </div>
                       <div>
                         <label className="block text-xl font-semibold text-slate-300 mb-4">Background Color</label>
-                        <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-3">
                           <input 
                             type="color" 
                             value={bgColor} 
                             onChange={(e) => setBgColor(e.target.value)} 
-                            className="w-16 h-16 rounded-xl border-2 border-white/20 cursor-pointer bg-transparent"
+                            className="w-12 h-12 rounded-lg border-2 border-slate-600 cursor-pointer"
+                            style={{ backgroundColor: bgColor }}
                           />
-                          <span className="text-lg text-slate-300 font-mono">{bgColor}</span>
+                          <div className="bg-slate-800/90 px-3 py-2 rounded-lg border border-slate-600 flex-1">
+                            <span className="text-sm text-slate-300 font-mono">{bgColor}</span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -262,7 +268,7 @@ function QrCodeGenerator({ onBack }) {
                       <h4 className="text-xl font-semibold text-white mb-6 text-center">Live Preview</h4>
                       {originalUrl ? (
                         <QRCodeSVG 
-                          value={originalUrl} 
+                          value={originalUrl}
                           size={200} 
                           fgColor={fgColor} 
                           bgColor={bgColor}
@@ -335,7 +341,7 @@ function QrCodeGenerator({ onBack }) {
                       
                       <div className="flex justify-center mb-4">
                         <QRCodeSVG 
-                          value={qr.shortUrl} 
+                          value={qr.originalUrl} 
                           size={150} 
                           fgColor={qr.fgColor || '#000000'} 
                           bgColor={qr.bgColor || '#ffffff'}

@@ -69,18 +69,15 @@ app.post('/convert', upload.single('file'), async (req, res) => {
 app.use('/api/qr', require('./routes/qr'));
 
 // Redirect Route
-app.get('/:shortUrl', async (req, res) => {
+app.get('/:shortId', async (req, res) => {
   try {
     let qrCode = null;
-    const shortId = req.params.shortUrl; // This is just the short ID part
+    const shortId = req.params.shortId; // This is just the short ID part
     
     if (isMongoConnected) {
-      // Look for QR code where shortUrl contains this shortId
+      // Look for QR code where shortUrl ends with this shortId
       qrCode = await QrCode.findOne({ 
-        $or: [
-          { shortUrl: shortId },
-          { shortUrl: `http://localhost:3001/${shortId}` }
-        ]
+        shortUrl: { $regex: `/${shortId}$` }
       });
       if (qrCode) {
         qrCode.clicks++;
@@ -89,7 +86,7 @@ app.get('/:shortUrl', async (req, res) => {
     } else {
       // Check in-memory storage - look for shortUrl ending with this shortId
       qrCode = inMemoryQrCodes.find(qr => 
-        qr.shortUrl === shortId || qr.shortUrl.endsWith(`/${shortId}`)
+        qr.shortUrl.endsWith(`/${shortId}`)
       );
       if (qrCode) {
         qrCode.clicks++;
@@ -106,11 +103,11 @@ app.get('/:shortUrl', async (req, res) => {
       return res.redirect(redirectUrl);
     } else {
       console.log(`Short URL not found: ${shortId}`);
-      return res.status(404).json('Short URL not found');
+      return res.status(404).json({ error: 'Short URL not found' });
     }
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    console.error('Redirect error:', err.message);
+    res.status(500).json({ error: 'Server Error' });
   }
 });
 
