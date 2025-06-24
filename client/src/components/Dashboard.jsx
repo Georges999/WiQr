@@ -72,18 +72,6 @@ function Dashboard({ onNavigate }) {
       category: 'Generate'
     },
     {
-      id: 'network',
-      title: 'Network Monitor',
-      description: 'See who\'s connected to your WiFi instantly - no setup required, just open and view',
-      icon: (
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5l-3.9 19.5m-2.1-19.5l-3.9 19.5" />
-        </svg>
-      ),
-      gradient: 'from-cyan-500 to-teal-600',
-      category: 'Monitor'
-    },
-    {
       id: 'analytics',
       title: 'Analytics Hub',
       description: 'Comprehensive insights and performance metrics for all your digital assets',
