@@ -26,7 +26,7 @@ function updateStorage(qrCodes, counter) {
 // @route   POST /api/qr
 // @desc    Create a new QR code
 router.post('/', async (req, res) => {
-  const { name, originalUrl, fgColor, bgColor } = req.body;
+  const { name, originalUrl, fgColor, bgColor, centerText, wifiData, type } = req.body;
 
   if (!originalUrl) {
     return res.status(400).json({ msg: 'Please provide an original URL' });
@@ -43,6 +43,9 @@ router.post('/', async (req, res) => {
       clicks: 0,
       fgColor: fgColor || '#000000',
       bgColor: bgColor || '#ffffff',
+      centerText: centerText || '',
+      wifiData: wifiData || null,
+      type: type || 'url',
       createdAt: new Date()
     };
     
@@ -62,6 +65,19 @@ router.get('/', async (req, res) => {
     try {
         const storage = getStorage();
         res.json(storage.qrCodes);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+});
+
+// @route   GET /api/qr/wifi
+// @desc    Get all WiFi QR codes
+router.get('/wifi', async (req, res) => {
+    try {
+        const storage = getStorage();
+        const wifiCodes = storage.qrCodes.filter(qr => qr.type === 'wifi' || qr.originalUrl?.startsWith('WIFI:'));
+        res.json(wifiCodes);
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');
@@ -127,7 +143,7 @@ router.delete('/:id', async (req, res) => {
 // @route   PUT /api/qr/:id
 // @desc    Update a QR code
 router.put('/:id', async (req, res) => {
-    const { name, originalUrl, fgColor, bgColor } = req.body;
+    const { name, originalUrl, fgColor, bgColor, centerText, wifiData, type } = req.body;
 
     try {
         const storage = getStorage();
@@ -141,6 +157,9 @@ router.put('/:id', async (req, res) => {
         qrCode.originalUrl = originalUrl || qrCode.originalUrl;
         qrCode.fgColor = fgColor || qrCode.fgColor;
         qrCode.bgColor = bgColor || qrCode.bgColor;
+        qrCode.centerText = centerText !== undefined ? centerText : qrCode.centerText;
+        qrCode.wifiData = wifiData !== undefined ? wifiData : qrCode.wifiData;
+        qrCode.type = type || qrCode.type;
 
         updateStorage(storage.qrCodes, storage.counter);
         res.json(qrCode);

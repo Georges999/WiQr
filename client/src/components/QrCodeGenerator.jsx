@@ -2,12 +2,63 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { QRCodeSVG } from 'qrcode.react';
 
+// Enhanced QR Code SVG with center text that doesn't interfere with scanning
+function EnhancedQRCode({ value, size, fgColor, bgColor, centerText }) {
+  return (
+    <div className="relative inline-block">
+      <QRCodeSVG 
+        value={value}
+        size={size} 
+        fgColor={fgColor} 
+        bgColor={bgColor}
+        level="H" // High error correction allows for center obstruction
+        includeMargin={true}
+      />
+      {centerText && (
+        <div 
+          className="absolute inset-0 flex items-center justify-center pointer-events-none"
+          style={{
+            // Position the text in the very center where QR codes have natural redundancy
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            maxWidth: `${size * 0.25}px`, // Limit size to 25% of QR code
+            maxHeight: `${size * 0.25}px`,
+          }}
+        >
+          <div 
+            className="rounded-lg text-center flex items-center justify-center shadow-lg"
+            style={{ 
+              backgroundColor: bgColor,
+              color: fgColor,
+              fontSize: `${Math.min(size * 0.04, centerText.length > 6 ? size * 0.03 : size * 0.045)}px`,
+              fontWeight: '700',
+              padding: `${size * 0.01}px ${size * 0.015}px`,
+              border: `${Math.max(1, size * 0.003)}px solid ${fgColor}`,
+              minWidth: `${size * 0.15}px`,
+              minHeight: `${size * 0.08}px`,
+              maxWidth: `${size * 0.25}px`,
+              maxHeight: `${size * 0.12}px`,
+              wordBreak: 'break-word',
+              lineHeight: '1.1',
+              boxShadow: `0 0 ${size * 0.01}px rgba(0,0,0,0.3)`
+            }}
+          >
+            {centerText.length > 8 ? centerText.substring(0, 8) + '...' : centerText}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // Modal Component for Editing with Aurora Theme
 function EditModal({ qr, onClose, onSave }) {
   const [name, setName] = useState(qr.name);
   const [originalUrl, setOriginalUrl] = useState(qr.originalUrl);
   const [fgColor, setFgColor] = useState(qr.fgColor || '#000000');
   const [bgColor, setBgColor] = useState(qr.bgColor || '#ffffff');
+  const [centerText, setCenterText] = useState(qr.centerText || '');
   const [error, setError] = useState('');
 
   const handleSave = () => {
@@ -15,7 +66,7 @@ function EditModal({ qr, onClose, onSave }) {
       setError('URL cannot be empty.');
       return;
     }
-    onSave(qr._id, { name, originalUrl, fgColor, bgColor });
+    onSave(qr._id, { name, originalUrl, fgColor, bgColor, centerText });
   };
 
   return (
@@ -72,6 +123,17 @@ function EditModal({ qr, onClose, onSave }) {
                 </div>
               </div>
             </div>
+            
+            <div>
+              <label className="block text-sm font-semibold text-slate-300 mb-3">Center Text</label>
+              <input
+                type="text"
+                placeholder="Add text in center"
+                value={centerText}
+                onChange={(e) => setCenterText(e.target.value)}
+                className="w-full p-4 glass-minimal border border-white/20 rounded-xl text-white placeholder-slate-400 focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/30 transition-all"
+              />
+            </div>
           </div>
 
           {error && (
@@ -105,6 +167,7 @@ function QrCodeGenerator({ onBack }) {
   const [originalUrl, setOriginalUrl] = useState('');
   const [fgColor, setFgColor] = useState('#000000');
   const [bgColor, setBgColor] = useState('#ffffff');
+  const [centerText, setCenterText] = useState('');
   const [qrCodes, setQrCodes] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -133,11 +196,12 @@ function QrCodeGenerator({ onBack }) {
     setIsLoading(true);
     setError(null);
     try {
-      await axios.post('http://localhost:3001/api/qr', { name, originalUrl, fgColor, bgColor });
+      await axios.post('http://localhost:3001/api/qr', { name, originalUrl, fgColor, bgColor, centerText });
       setName('');
       setOriginalUrl('');
       setFgColor('#000000');
       setBgColor('#ffffff');
+      setCenterText('');
       fetchQrCodes();
     } catch (err) {
       setError('Failed to create QR code.');
@@ -184,8 +248,8 @@ function QrCodeGenerator({ onBack }) {
             </button>
             
             <div className="text-center fade-in-scale">
-              <h1 className="font-display text-page-title mb-4 tracking-tight">QR Code Generator</h1>
-              <p className="text-xl text-slate-300 max-w-3xl mx-auto">Create dynamic, trackable QR codes with custom styling and aurora aesthetics</p>
+              <h1 className="font-display text-page-title mb-4 tracking-tight">URL QR Code Generator</h1>
+              <p className="text-xl text-slate-300 max-w-3xl mx-auto">Create URL QR codes with custom styling</p>
             </div>
           </div>
         </header>
@@ -260,6 +324,17 @@ function QrCodeGenerator({ onBack }) {
                         </div>
                       </div>
                     </div>
+                    
+                    <div>
+                      <label className="block text-xl font-semibold text-slate-300 mb-4">Center Text</label>
+                      <input
+                        type="text"
+                        placeholder="Add text in center"
+                        value={centerText}
+                        onChange={(e) => setCenterText(e.target.value)}
+                        className="w-full p-4 bg-slate-800/80 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 transition-all text-lg focus:bg-slate-700/80"
+                      />
+                    </div>
                   </div>
 
                   {/* Live Preview */}
@@ -267,13 +342,12 @@ function QrCodeGenerator({ onBack }) {
                     <div className="glass-frosted rounded-2xl p-8 mb-6">
                       <h4 className="text-xl font-semibold text-white mb-6 text-center">Live Preview</h4>
                       {originalUrl ? (
-                        <QRCodeSVG 
+                        <EnhancedQRCode 
                           value={originalUrl}
                           size={200} 
                           fgColor={fgColor} 
                           bgColor={bgColor}
-                          level="M"
-                          includeMargin={true}
+                          centerText={centerText}
                         />
                       ) : (
                         <div className="w-[200px] h-[200px] glass-minimal rounded-xl flex items-center justify-center">
@@ -340,13 +414,12 @@ function QrCodeGenerator({ onBack }) {
                       </div>
                       
                       <div className="flex justify-center mb-4">
-                        <QRCodeSVG 
+                        <EnhancedQRCode 
                           value={qr.originalUrl} 
                           size={150} 
                           fgColor={qr.fgColor || '#000000'} 
                           bgColor={qr.bgColor || '#ffffff'}
-                          level="M"
-                          includeMargin={true}
+                          centerText={qr.centerText}
                         />
                       </div>
                       
@@ -377,7 +450,7 @@ function QrCodeGenerator({ onBack }) {
               </div>
               
               <p className="text-body">
-                Crafted with precision by{' '}
+                made by the one and only{' '}
                 <a 
                   href="https://georges-ghazal.org" 
                   target="_blank" 
@@ -389,11 +462,11 @@ function QrCodeGenerator({ onBack }) {
               </p>
               
               <div className="flex items-center justify-center space-x-6 pt-4">
-                <span className="text-small">© 2024 WiQr Platform</span>
+                <span className="text-small">© 2025 WiQr Platform</span>
                 <span className="text-small">•</span>
-                <span className="text-small">Enterprise Solutions</span>
+                <span className="text-small">InternshipSpeedrun</span>
                 <span className="text-small">•</span>
-                <span className="text-small">Global Scale</span>
+                <span className="text-small">this is all just to get a job</span>
               </div>
             </div>
           </div>

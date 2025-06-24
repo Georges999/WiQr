@@ -246,7 +246,7 @@ function FileConverter({ onBack }) {
             </div>
             
             <p className="text-body">
-              Crafted with precision by{' '}
+              made by the one and only{' '}
               <a 
                 href="https://georges-ghazal.org" 
                 target="_blank" 
@@ -258,11 +258,11 @@ function FileConverter({ onBack }) {
             </p>
             
             <div className="flex items-center justify-center space-x-6 pt-4">
-              <span className="text-small">© 2024 WiQr Platform</span>
+              <span className="text-small">© 2025 WiQr Platform</span>
               <span className="text-small">•</span>
-              <span className="text-small">Enterprise Solutions</span>
+              <span className="text-small">InternshipSpeedrun</span>
               <span className="text-small">•</span>
-              <span className="text-small">Global Scale</span>
+              <span className="text-small">this is all just to get a job</span>
             </div>
           </div>
         </div>

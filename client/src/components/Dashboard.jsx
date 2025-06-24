@@ -48,7 +48,7 @@ function Dashboard({ onNavigate }) {
     },
     {
       id: 'qr',
-      title: 'QR Generator',
+      title: 'URL QR Generator',
       description: 'Create dynamic, trackable QR codes with advanced analytics and custom branding',
       icon: (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
@@ -57,6 +57,18 @@ function Dashboard({ onNavigate }) {
         </svg>
       ),
       gradient: 'from-emerald-500 to-teal-600',
+      category: 'Generate'
+    },
+    {
+      id: 'wifi',
+      title: 'WiFi QR Generator',
+      description: 'Generate instant WiFi sharing QR codes with custom designs and network configurations',
+      icon: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+        </svg>
+      ),
+      gradient: 'from-violet-500 to-purple-600',
       category: 'Generate'
     },
     {
@@ -236,7 +248,7 @@ function Dashboard({ onNavigate }) {
             </div>
             
             <p className="text-body">
-              Crafted with precision by{' '}
+              made by the one and only{' '}
               <a 
                 href="https://georges-ghazal.org" 
                 target="_blank" 
@@ -248,11 +260,11 @@ function Dashboard({ onNavigate }) {
             </p>
             
             <div className="flex items-center justify-center space-x-6 pt-4">
-              <span className="text-small">© 2024 WiQr Platform</span>
+              <span className="text-small">© 2025 WiQr Platform</span>
               <span className="text-small">•</span>
-              <span className="text-small">Enterprise Solutions</span>
+              <span className="text-small">InternshipSpeedrun</span>
               <span className="text-small">•</span>
-              <span className="text-small">Global Scale</span>
+              <span className="text-small">this is all just to get a job</span>
             </div>
           </div>
         </div>

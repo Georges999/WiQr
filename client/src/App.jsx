@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import FileConverter from './components/FileConverter';
 import QrCodeGenerator from './components/QrCodeGenerator';
+import WifiQrGenerator from './components/WifiQrGenerator';
 import Dashboard from './components/Dashboard';
 import ThreeBackground from './components/ThreeBackground';
 import './App.css';
@@ -15,6 +16,8 @@ function App() {
         return <FileConverter onBack={() => setCurrentPage('dashboard')} />;
       case 'qr':
         return <QrCodeGenerator onBack={() => setCurrentPage('dashboard')} user={user} />;
+      case 'wifi':
+        return <WifiQrGenerator onBack={() => setCurrentPage('dashboard')} user={user} />;
       case 'dashboard':
       default:
         return <Dashboard onNavigate={setCurrentPage} user={user} setUser={setUser} />;
