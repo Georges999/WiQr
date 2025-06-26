@@ -27,10 +27,16 @@ ChartJS.register(
 );
 
 function DataVisualizer({ onBack }) {
+  const [currentStep, setCurrentStep] = useState(1);
   const [rawData, setRawData] = useState('');
   const [chartType, setChartType] = useState('bar');
   const [colorTheme, setColorTheme] = useState('professional');
   const [parsedData, setParsedData] = useState(null);
+  const [columnMapping, setColumnMapping] = useState({
+    labels: '',
+    values: [],
+    categories: ''
+  });
   const [error, setError] = useState('');
   const [generatedChart, setGeneratedChart] = useState(null);
   const [savedCharts, setSavedCharts] = useState([]);
@@ -130,33 +136,32 @@ function DataVisualizer({ onBack }) {
     }
   };
 
-  // Generate chart data for Chart.js
-  const generateChartData = (useChartData = null) => {
-    // Use provided chart data or current parsed data
-    const dataToUse = useChartData || parsedData;
-    if (!dataToUse) return null;
+  // Generate chart data using column mapping
+  const generateChartData = () => {
+    if (!parsedData || !columnMapping.labels) return null;
 
-    const { headers, rows } = dataToUse;
+    const { headers, rows } = parsedData;
     const theme = themes[colorTheme];
     
-    console.log('Generating chart with data:', { headers, rows, chartType }); // Debug log
-    
+    const labelColumnIndex = headers.indexOf(columnMapping.labels);
+    if (labelColumnIndex === -1) return null;
+
     if (chartType === 'pie') {
-      const labels = rows.map(row => String(row[0] || 'Unknown'));
-      const values = rows.map((row, index) => {
-        const val = row[1];
-        console.log(`Row ${index}:`, row, 'Value extracted:', val, 'Type:', typeof val);
-        
-        // Handle different value types
+      if (!columnMapping.values.length) return null;
+      
+      const valueColumnIndex = headers.indexOf(columnMapping.values[0]);
+      if (valueColumnIndex === -1) return null;
+
+      const labels = rows.map(row => String(row[labelColumnIndex] || 'Unknown'));
+      const values = rows.map(row => {
+        const val = row[valueColumnIndex];
         if (typeof val === 'number') return val;
         if (typeof val === 'string') {
           const parsed = parseFloat(val.replace(/,/g, ''));
           return isNaN(parsed) ? 1 : parsed;
         }
-        return 1; // Default fallback
+        return 1;
       });
-      
-      console.log('Pie chart - Labels:', labels, 'Values:', values);
       
       return {
         labels,
@@ -169,28 +174,26 @@ function DataVisualizer({ onBack }) {
       };
     }
 
-
-
     // For bar and line charts
-    const labels = rows.map(row => String(row[0] || 'Unknown'));
-    const datasets = headers.slice(1).map((header, index) => {
-      const data = rows.map((row, rowIndex) => {
-        const val = row[index + 1];
-        console.log(`Bar/Line Row ${rowIndex}, Col ${index + 1}:`, val, 'Type:', typeof val);
-        
-        // Handle different value types
+    if (!columnMapping.values.length) return null;
+
+    const labels = rows.map(row => String(row[labelColumnIndex] || 'Unknown'));
+    const datasets = columnMapping.values.map((valueColumn, index) => {
+      const valueColumnIndex = headers.indexOf(valueColumn);
+      if (valueColumnIndex === -1) return null;
+
+      const data = rows.map(row => {
+        const val = row[valueColumnIndex];
         if (typeof val === 'number') return val;
         if (typeof val === 'string') {
           const parsed = parseFloat(val.replace(/,/g, ''));
           return isNaN(parsed) ? 0 : parsed;
         }
-        return 0; // Default fallback
+        return 0;
       });
       
-      console.log(`Dataset "${header}":`, data);
-      
       return {
-        label: header,
+        label: valueColumn,
         data,
         backgroundColor: chartType === 'line' ? 'transparent' : theme[index % theme.length],
         borderColor: theme[index % theme.length],
@@ -199,11 +202,50 @@ function DataVisualizer({ onBack }) {
         tension: chartType === 'line' ? 0.4 : 0,
         pointBackgroundColor: theme[index % theme.length],
         pointBorderColor: '#ffffff',
-        pointRadius: chartType === 'line' ? 4 : 0,
+        pointBorderWidth: 2,
       };
-    });
+    }).filter(Boolean);
 
     return { labels, datasets };
+  };
+
+  // Get column type (numeric, text, mixed)
+  const getColumnType = (columnName) => {
+    if (!parsedData) return 'unknown';
+    
+    const columnIndex = parsedData.headers.indexOf(columnName);
+    if (columnIndex === -1) return 'unknown';
+    
+    const values = parsedData.rows.map(row => row[columnIndex]);
+    const numericValues = values.filter(val => typeof val === 'number' || (!isNaN(parseFloat(val)) && val !== ''));
+    
+    if (numericValues.length === values.length) return 'numeric';
+    if (numericValues.length === 0) return 'text';
+    return 'mixed';
+  };
+
+  // Auto-suggest column mappings based on data types
+  const autoSuggestMapping = () => {
+    if (!parsedData) return;
+
+    const { headers } = parsedData;
+    const textColumns = headers.filter(h => getColumnType(h) === 'text');
+    const numericColumns = headers.filter(h => getColumnType(h) === 'numeric');
+    const mixedColumns = headers.filter(h => getColumnType(h) === 'mixed');
+    
+    // For labels, prefer text columns, then mixed, then first column
+    const labelColumn = textColumns[0] || mixedColumns[0] || headers[0];
+    
+    // For values, prefer numeric columns only
+    const valueColumns = chartType === 'pie' 
+      ? [numericColumns[0] || headers[1]] 
+      : numericColumns.slice(0, 3);
+    
+    setColumnMapping({
+      labels: labelColumn,
+      values: valueColumns.filter(Boolean),
+      categories: textColumns[1] || ''
+    });
   };
 
   // Chart options
@@ -216,33 +258,69 @@ function DataVisualizer({ onBack }) {
       animation: {
         duration: 1500,
       },
+      layout: {
+        padding: 20
+      },
       plugins: {
         legend: {
           labels: {
-            color: '#ffffff',
-            font: { size: 12 }
-          }
+            color: '#1e293b', // Dark slate for visibility on light background
+            font: { size: 14, weight: '500' },
+            padding: 20,
+            usePointStyle: true,
+            pointStyle: 'circle'
+          },
+          position: 'bottom'
         },
         tooltip: {
-          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          backgroundColor: 'rgba(15, 23, 42, 0.95)', // Dark background
           titleColor: '#ffffff',
           bodyColor: '#ffffff',
+          borderColor: '#3b82f6',
+          borderWidth: 1,
+          cornerRadius: 8,
+          titleFont: { size: 14, weight: 'bold' },
+          bodyFont: { size: 13 },
+          padding: 12
         },
         title: {
           display: true,
           text: generatedChart ? generatedChart.title : chartTitle,
-          color: '#ffffff',
-          font: { size: 16, weight: 'bold' }
+          color: '#1e293b', // Dark text for light background
+          font: { size: 18, weight: 'bold' },
+          padding: { top: 10, bottom: 30 }
         }
       },
       scales: currentChartType === 'pie' ? {} : {
         x: {
-          grid: { color: 'rgba(255, 255, 255, 0.1)' },
-          ticks: { color: '#ffffff' }
+          grid: { 
+            color: 'rgba(148, 163, 184, 0.3)', // Light gray grid
+            lineWidth: 1
+          },
+          ticks: { 
+            color: '#334155', // Dark gray text
+            font: { size: 12, weight: '500' },
+            padding: 8
+          },
+          border: {
+            color: '#64748b',
+            width: 2
+          }
         },
         y: {
-          grid: { color: 'rgba(255, 255, 255, 0.1)' },
-          ticks: { color: '#ffffff' },
+          grid: { 
+            color: 'rgba(148, 163, 184, 0.3)',
+            lineWidth: 1
+          },
+          ticks: { 
+            color: '#334155',
+            font: { size: 12, weight: '500' },
+            padding: 8
+          },
+          border: {
+            color: '#64748b',
+            width: 2
+          },
           beginAtZero: true
         }
       }
@@ -263,14 +341,13 @@ function DataVisualizer({ onBack }) {
     }
 
     // Use the data from the generated chart, not current parsedData
-    const chartData = generateChartData(generatedChart.data);
+    const chartData = generateChartData();
     if (!chartData) return null;
 
     const props = {
       ref: chartRef,
       data: chartData,
       options: getChartOptions(generatedChart.type),
-      height: 300,
       key: generatedChart.refreshKey // Force re-render when chart changes
     };
 
@@ -292,6 +369,7 @@ function DataVisualizer({ onBack }) {
     }
   }, []);
 
+  // Handle data parsing and auto-move to step 2
   const handleDataChange = (value) => {
     setRawData(value);
     setError('');
@@ -299,34 +377,54 @@ function DataVisualizer({ onBack }) {
     if (value.trim()) {
       try {
         const parsed = parseData(value);
-        console.log('Parsed data:', parsed); // Debug log
         setParsedData(parsed);
+        // Auto-move to step 2 and suggest mappings
+        setCurrentStep(2);
+        setTimeout(() => autoSuggestMapping(), 100);
       } catch (err) {
-        console.error('Parse error:', err); // Debug log
         setError(err.message);
         setParsedData(null);
+        setCurrentStep(1);
       }
     } else {
       setParsedData(null);
+      setCurrentStep(1);
     }
   };
 
+  // Handle column mapping changes
+  const handleMappingChange = (type, value) => {
+    setColumnMapping(prev => ({
+      ...prev,
+      [type]: value
+    }));
+  };
+
+  const handleValueColumnToggle = (column) => {
+    setColumnMapping(prev => ({
+      ...prev,
+      values: prev.values.includes(column) 
+        ? prev.values.filter(v => v !== column)
+        : [...prev.values, column]
+    }));
+  };
+
   const generateChart = () => {
-    if (!parsedData || !chartTitle.trim()) return;
+    if (!parsedData || !chartTitle.trim() || !columnMapping.labels) return;
     
-    // Force a fresh chart generation with current data
     const chart = {
       id: Date.now(),
       title: chartTitle,
-      data: { ...parsedData }, // Create a fresh copy
+      data: { ...parsedData },
       type: chartType,
       theme: colorTheme,
+      mapping: { ...columnMapping },
       createdAt: new Date().toISOString(),
-      // Add a refresh key to force re-render
       refreshKey: Date.now()
     };
     
     setGeneratedChart(chart);
+    setCurrentStep(3);
   };
 
   const saveChart = () => {
@@ -342,7 +440,13 @@ function DataVisualizer({ onBack }) {
     setParsedData(chart.data);
     setChartType(chart.type);
     setColorTheme(chart.theme);
+    setColumnMapping(chart.mapping || {
+      labels: chart.data.headers[0],
+      values: [chart.data.headers[1]],
+      categories: ''
+    });
     setGeneratedChart(chart);
+    setCurrentStep(3);
     
     // Reconstruct raw data from parsed data
     const headers = chart.data.headers.join(',');
@@ -367,8 +471,6 @@ function DataVisualizer({ onBack }) {
     link.click();
   };
 
-
-
   return (
     <div className="min-h-screen flex flex-col w-full">
       {/* Header */}
@@ -389,6 +491,37 @@ function DataVisualizer({ onBack }) {
             <p className="text-xl text-slate-300 max-w-3xl mx-auto">
               Perfect for students! Paste your data, pick a chart, download for presentations 📊
             </p>
+            
+            {/* Step Indicator */}
+            <div className="flex justify-center mt-8">
+              <div className="flex items-center space-x-4">
+                {[1, 2, 3].map(step => (
+                  <div key={step} className="flex items-center">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
+                      currentStep >= step 
+                        ? 'bg-blue-500 text-white' 
+                        : 'bg-slate-600 text-slate-400'
+                    }`}>
+                      {step}
+                    </div>
+                    {step < 3 && (
+                      <div className={`w-12 h-1 mx-2 transition-all ${
+                        currentStep > step 
+                          ? 'bg-blue-500' 
+                          : 'bg-slate-600'
+                      }`}></div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="flex justify-center mt-2 text-sm text-slate-400">
+              <div className="flex space-x-16">
+                <span className={currentStep >= 1 ? 'text-blue-300' : ''}>Paste Data</span>
+                <span className={currentStep >= 2 ? 'text-blue-300' : ''}>Map Columns</span>
+                <span className={currentStep >= 3 ? 'text-blue-300' : ''}>Generate Chart</span>
+              </div>
+            </div>
           </div>
         </div>
       </header>
@@ -438,7 +571,7 @@ function DataVisualizer({ onBack }) {
             </div>
           )}
 
-          {/* Data Input */}
+          {/* Step 1: Data Input */}
           <div className="glass-ultra rounded-3xl p-8 shadow-xl">
             <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
               <span className="text-3xl mr-3">📋</span>
@@ -453,212 +586,260 @@ function DataVisualizer({ onBack }) {
                     type="text"
                     value={chartTitle}
                     onChange={(e) => setChartTitle(e.target.value)}
-                    placeholder="My Awesome Chart"
+                    placeholder="Employee Data Analysis"
                     className="w-full p-3 bg-slate-800/80 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 transition-all"
                   />
                 </div>
               </div>
               
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                  <button
-                    onClick={() => {
-                      const csvData = 'Category,Value\nApples,23\nBananas,17\nOranges,31\nGrapes,12';
-                      setRawData(csvData);
-                      handleDataChange(csvData);
-                    }}
-                    className="px-3 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-lg text-sm transition-all"
-                  >
-                    📊 Sample CSV
-                  </button>
-                  <button
-                    onClick={() => {
-                      const jsonData = '[{"product":"Laptops","sales":45},{"product":"Phones","sales":67},{"product":"Tablets","sales":23}]';
-                      setRawData(jsonData);
-                      handleDataChange(jsonData);
-                    }}
-                    className="px-3 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-300 rounded-lg text-sm transition-all"
-                  >
-                    🔗 Sample JSON
-                  </button>
-                  <button
-                    onClick={() => {
-                      const listData = 'Red, Blue, Green, Yellow, Purple';
-                      setRawData(listData);
-                      handleDataChange(listData);
-                    }}
-                    className="px-3 py-2 bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 rounded-lg text-sm transition-all"
-                  >
-                    📝 Simple List
-                  </button>
-                </div>
-
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Your Data (CSV, JSON, or simple list)
+                </label>
                 <textarea
                   value={rawData}
                   onChange={(e) => handleDataChange(e.target.value)}
-                  placeholder="📋 Flexible data input! Try any format:
-
-🗂️ CSV/TSV: Category,Values
-Math,85
-Science,92
-
-🔗 JSON Array: Click sample buttons above
-
-📝 Simple list: Red, Blue, Green, Yellow
-
-📊 Numbers only: 10,25,30,15,40
-
-Auto-detects your format!"
-                  className="w-full h-48 p-4 bg-slate-800/80 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 transition-all resize-none font-mono text-sm"
+                  placeholder="name,age,department,salary,city&#10;John Smith,28,Engineering,75000,New York&#10;Sarah Johnson,32,Marketing,68000,Los Angeles&#10;..."
+                  className="w-full h-48 p-4 bg-slate-800/80 border border-slate-600 rounded-xl text-white placeholder-slate-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 transition-all font-mono text-sm resize-y"
                 />
+                {error && (
+                  <p className="text-red-400 text-sm mt-2">{error}</p>
+                )}
               </div>
-              
-              {error && (
-                <div className="p-4 bg-red-500/20 border border-red-500/30 rounded-xl text-red-300">
-                  {error}
-                </div>
-              )}
-              
-              <div className="text-sm text-slate-400">
-                💡 <strong>Tips:</strong> Separate columns with commas or tabs. First row should be headers.
+
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
+                <h4 className="text-blue-300 font-medium mb-2">💡 Quick Tips:</h4>
+                <ul className="text-sm text-slate-300 space-y-1">
+                  <li>• CSV format works best: name,age,salary</li>
+                  <li>• Include headers for clear column names</li>
+                  <li>• Mix text and numbers freely</li>
+                  <li>• Example: departments (text), salaries (numbers)</li>
+                </ul>
               </div>
             </div>
           </div>
 
-          {/* Chart Selection */}
-          <div className="glass-ultra rounded-3xl p-8 shadow-xl">
-            <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
-              <span className="text-3xl mr-3">📊</span>
-              Step 2: Choose Chart Type
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {[
-                { type: 'bar', icon: '📊', name: 'Bar Chart', desc: 'Compare values' },
-                { type: 'line', icon: '📈', name: 'Line Chart', desc: 'Show trends' },
-                { type: 'pie', icon: '🥧', name: 'Pie Chart', desc: 'Show parts' }
-              ].map(({ type, icon, name, desc }) => (
-                <button
-                  key={type}
-                  onClick={() => setChartType(type)}
-                  className={`p-6 rounded-xl text-center transition-all ${
-                    chartType === type
-                      ? 'bg-blue-500/30 border-2 border-blue-400 text-white'
-                      : 'glass-minimal border border-white/20 text-slate-300 hover:glass-frosted hover:text-white'
-                  }`}
-                >
-                  <div className="text-4xl mb-2">{icon}</div>
-                  <div className="font-bold text-lg">{name}</div>
-                  <div className="text-sm opacity-80">{desc}</div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Color Themes */}
-          <div className="glass-ultra rounded-3xl p-8 shadow-xl">
-            <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
-              <span className="text-3xl mr-3">🎨</span>
-              Step 3: Pick Colors
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {Object.entries(themes).map(([themeKey, colors]) => (
-                <button
-                  key={themeKey}
-                  onClick={() => setColorTheme(themeKey)}
-                  className={`p-6 rounded-xl text-center transition-all ${
-                    colorTheme === themeKey
-                      ? 'bg-blue-500/30 border-2 border-blue-400'
-                      : 'glass-minimal border border-white/20 hover:glass-frosted'
-                  }`}
-                >
-                  <div className="flex justify-center space-x-2 mb-3">
-                    {colors.slice(0, 4).map((color, index) => (
-                      <div
-                        key={index}
-                        className="w-6 h-6 rounded-full"
-                        style={{ backgroundColor: color }}
-                      />
-                    ))}
-                  </div>
-                  <div className="font-bold text-white capitalize">{themeKey}</div>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Generate Chart */}
-          {parsedData && (
+          {/* Step 2: Column Mapping */}
+          {currentStep >= 2 && parsedData && (
             <div className="glass-ultra rounded-3xl p-8 shadow-xl">
               <h3 className="text-2xl font-bold text-white mb-6 flex items-center">
-                <span className="text-3xl mr-3">⚡</span>
-                Step 4: Generate Your Chart
+                <span className="text-3xl mr-3">🎯</span>
+                Step 2: Choose Your Columns
               </h3>
               
-              <div className="text-center space-y-6">
-                <div className="text-slate-300">
-                  Ready to create your chart with {parsedData.rows.length} data rows!
-                  <div className="text-sm mt-2 text-slate-400">
-                    Data preview: {parsedData.headers.join(', ')}
+              <div className="space-y-6">
+                <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-4">
+                  <p className="text-blue-300 text-sm mb-2">
+                    <strong>Detected {parsedData.headers.length} columns:</strong> {parsedData.headers.join(', ')}
+                  </p>
+                  <div className="text-xs text-blue-200">
+                    <strong>💡 Example:</strong> Use "name" or "department" for labels, "salary" or "age" for values
                   </div>
                 </div>
-                
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Labels Column */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-3">
+                      📊 Labels (X-axis / Categories)
+                    </label>
+                    <select
+                      value={columnMapping.labels}
+                      onChange={(e) => handleMappingChange('labels', e.target.value)}
+                      className="w-full p-3 bg-slate-800/80 border border-slate-600 rounded-xl text-white focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 transition-all"
+                    >
+                      <option value="">Choose labels column...</option>
+                      {parsedData.headers.map(header => (
+                        <option key={header} value={header}>
+                          {header} ({getColumnType(header)})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Chart Type */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-3">
+                      📈 Chart Type
+                    </label>
+                    <select
+                      value={chartType}
+                      onChange={(e) => {
+                        setChartType(e.target.value);
+                        autoSuggestMapping();
+                      }}
+                      className="w-full p-3 bg-slate-800/80 border border-slate-600 rounded-xl text-white focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 transition-all"
+                    >
+                      <option value="bar">📊 Bar Chart</option>
+                      <option value="line">📈 Line Chart</option>
+                      <option value="pie">🥧 Pie Chart</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Values Columns */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-3">
+                    📏 Values ({chartType === 'pie' ? 'single numeric value for pie slices' : 'numeric Y-axis data'})
+                  </label>
+                  
+                  {/* Show warning if no numeric columns */}
+                  {parsedData.headers.filter(h => getColumnType(h) === 'numeric').length === 0 && (
+                    <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 mb-4">
+                      <p className="text-yellow-300 text-sm">
+                        ⚠️ <strong>No numeric columns detected!</strong> Charts need numeric data for values. Make sure your data includes numbers for proper visualization.
+                      </p>
+                    </div>
+                  )}
+                  
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                    {parsedData.headers.map(header => {
+                      const isSelected = columnMapping.values.includes(header);
+                      const columnType = getColumnType(header);
+                      const isNumeric = columnType === 'numeric';
+                      const isDisabled = !isNumeric || (chartType === 'pie' && columnMapping.values.length > 0 && !isSelected);
+                      
+                      return (
+                        <button
+                          key={header}
+                          onClick={() => {
+                            if (isDisabled) return;
+                            if (chartType === 'pie') {
+                              handleMappingChange('values', [header]);
+                            } else {
+                              handleValueColumnToggle(header);
+                            }
+                          }}
+                          disabled={isDisabled}
+                          className={`p-3 rounded-xl text-sm font-medium transition-all border-2 ${
+                            isSelected
+                              ? 'bg-blue-500/30 border-blue-400 text-blue-200'
+                              : isNumeric
+                              ? 'bg-slate-700/50 border-slate-600 text-white hover:bg-slate-600/50'
+                              : 'bg-slate-800/50 border-slate-700 text-slate-400 opacity-50 cursor-not-allowed'
+                          } ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                          <div className="font-medium">{header}</div>
+                          <div className="text-xs opacity-75">
+                            {isNumeric ? '🔢' : '📝'} {columnType}
+                            {!isNumeric && <span className="block text-red-400">Not for charts</span>}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  
+                  <div className="mt-3 space-y-2">
+                    {chartType === 'pie' && (
+                      <p className="text-sm text-slate-400">
+                        💡 Pie charts need exactly one numeric column for slice sizes
+                      </p>
+                    )}
+                    {chartType !== 'pie' && (
+                      <p className="text-sm text-slate-400">
+                        💡 Select one or more numeric columns to plot on Y-axis
+                      </p>
+                    )}
+                    <p className="text-xs text-slate-500">
+                      ⚡ Only numeric columns (🔢) can be used as values. Text columns (📝) are for labels only.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Color Theme */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-300 mb-3">
+                    🎨 Color Theme
+                  </label>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {Object.entries(themes).map(([themeName, colors]) => (
+                      <button
+                        key={themeName}
+                        onClick={() => setColorTheme(themeName)}
+                        className={`p-4 rounded-xl border-2 transition-all ${
+                          colorTheme === themeName
+                            ? 'border-blue-400 bg-blue-500/20'
+                            : 'border-slate-600 bg-slate-700/30 hover:bg-slate-600/30'
+                        }`}
+                      >
+                        <div className="flex items-center space-x-2 mb-2">
+                          <div className="flex space-x-1">
+                            {colors.slice(0, 4).map((color, i) => (
+                              <div
+                                key={i}
+                                className="w-4 h-4 rounded"
+                                style={{ backgroundColor: color }}
+                              />
+                            ))}
+                          </div>
+                          <span className="text-white font-medium capitalize">{themeName}</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Generate Button */}
                 <button
                   onClick={generateChart}
-                  disabled={!chartTitle.trim()}
-                  className={`px-12 py-4 rounded-xl font-bold text-lg transition-all ${
-                    chartTitle.trim()
-                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 shadow-lg'
-                      : 'bg-slate-600 text-slate-400 cursor-not-allowed'
-                  }`}
+                  disabled={!columnMapping.labels || !columnMapping.values.length || !chartTitle.trim()}
+                  className="w-full py-4 px-6 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:from-slate-600 disabled:to-slate-700 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-all transform hover:scale-105 disabled:hover:scale-100"
                 >
-                  <span className="mr-2">🚀</span>
-                  Generate Chart
+                  🚀 Generate Chart
                 </button>
-                
-                {!chartTitle.trim() && (
-                  <p className="text-sm text-slate-400">Please enter a chart title first</p>
-                )}
               </div>
             </div>
           )}
 
-          {/* Chart Preview */}
-          {generatedChart && (
+          {/* Step 3: Generated Chart */}
+          {currentStep >= 3 && generatedChart && (
             <div className="glass-ultra rounded-3xl p-8 shadow-xl">
-              <div className="flex justify-between items-start mb-6">
+              <div className="flex justify-between items-center mb-6">
                 <h3 className="text-2xl font-bold text-white flex items-center">
-                  <span className="text-3xl mr-3">📊</span>
-                  {generatedChart.title}
+                  <span className="text-3xl mr-3">🎉</span>
+                  Your Chart: {generatedChart.title}
                 </h3>
-                <button
-                  onClick={saveChart}
-                  className="px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg font-medium hover:from-blue-600 hover:to-indigo-700 transition-all flex items-center"
-                >
-                  <span className="mr-2">💾</span>
-                  Save Chart
-                </button>
-              </div>
-              
-              <div className="h-80 bg-slate-800/50 rounded-xl p-4 mb-8">
-                {renderChart()}
-              </div>
-              
-              {/* Download Options */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button 
-                  onClick={downloadChart}
-                  className="px-8 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl font-bold hover:from-blue-600 hover:to-indigo-700 transition-all flex items-center justify-center"
-                >
-                  <span className="mr-2">🖼️</span>
-                  Download PNG
-                </button>
                 
-                <button className="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-xl font-bold opacity-50 cursor-not-allowed flex items-center justify-center">
-                  <span className="mr-2">🎬</span>
-                  Download GIF (Coming Soon)
-                </button>
+                <div className="flex space-x-3">
+                  <button
+                    onClick={saveChart}
+                    className="px-4 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-300 rounded-lg font-medium transition-all"
+                  >
+                    💾 Save
+                  </button>
+                  <button
+                    onClick={downloadChart}
+                    className="px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-lg font-medium transition-all"
+                  >
+                    📥 Download PNG
+                  </button>
+                  <button
+                    onClick={() => setCurrentStep(2)}
+                    className="px-4 py-2 bg-orange-500/20 hover:bg-orange-500/30 text-orange-300 rounded-lg font-medium transition-all"
+                  >
+                    ✏️ Edit
+                  </button>
+                </div>
+              </div>
+              
+                             <div className="bg-gradient-to-br from-white to-slate-50 rounded-xl p-8 shadow-inner border border-slate-200">
+                 <div className="h-96">
+                   {renderChart()}
+                 </div>
+               </div>
+              
+              <div className="mt-4 text-sm text-slate-400">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <strong>Labels:</strong> {columnMapping.labels}
+                  </div>
+                  <div>
+                    <strong>Values:</strong> {columnMapping.values.join(', ')}
+                  </div>
+                  <div>
+                    <strong>Data Points:</strong> {parsedData.rows.length}
+                  </div>
+                </div>
               </div>
             </div>
           )}
