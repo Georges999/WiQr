@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { QRCodeSVG } from 'qrcode.react';
 
 // Enhanced QR Code SVG with center text that doesn't interfere with scanning
@@ -27,24 +26,17 @@ function EnhancedQRCode({ value, size, fgColor, bgColor, centerText }) {
           }}
         >
           <div 
-            className="rounded-lg text-center flex items-center justify-center shadow-lg"
+            className="bg-white/90 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold text-center"
             style={{ 
-              backgroundColor: bgColor,
+              fontSize: `${Math.max(8, size * 0.03)}px`,
               color: fgColor,
-              fontSize: `${Math.min(size * 0.04, centerText.length > 6 ? size * 0.03 : size * 0.045)}px`,
-              fontWeight: '700',
-              padding: `${size * 0.01}px ${size * 0.015}px`,
-              border: `${Math.max(1, size * 0.003)}px solid ${fgColor}`,
-              minWidth: `${size * 0.15}px`,
-              minHeight: `${size * 0.08}px`,
-              maxWidth: `${size * 0.25}px`,
-              maxHeight: `${size * 0.12}px`,
-              wordBreak: 'break-word',
-              lineHeight: '1.1',
-              boxShadow: `0 0 ${size * 0.01}px rgba(0,0,0,0.3)`
+              maxWidth: '100%',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap'
             }}
           >
-            {centerText.length > 8 ? centerText.substring(0, 8) + '...' : centerText}
+            {centerText}
           </div>
         </div>
       )}
@@ -52,13 +44,13 @@ function EnhancedQRCode({ value, size, fgColor, bgColor, centerText }) {
   );
 }
 
-// Modal Component for Editing with Aurora Theme
+// Modal Component for Editing QR Codes
 function EditModal({ qr, onClose, onSave }) {
   const [name, setName] = useState(qr.name);
   const [originalUrl, setOriginalUrl] = useState(qr.originalUrl);
-  const [fgColor, setFgColor] = useState(qr.fgColor || '#000000');
-  const [bgColor, setBgColor] = useState(qr.bgColor || '#ffffff');
-  const [centerText, setCenterText] = useState(qr.centerText || '');
+  const [fgColor, setFgColor] = useState(qr.fgColor);
+  const [bgColor, setBgColor] = useState(qr.bgColor);
+  const [centerText, setCenterText] = useState(qr.centerText);
   const [error, setError] = useState('');
 
   const handleSave = () => {
@@ -97,42 +89,35 @@ function EditModal({ qr, onClose, onSave }) {
                 className="w-full p-4 glass-minimal border border-white/20 rounded-xl text-white placeholder-slate-400 focus:border-aurora-blue focus:ring-2 focus:ring-aurora-blue/30 transition-all"
               />
             </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-300 mb-3">Center Text (Optional)</label>
+              <input
+                type="text"
+                placeholder="Logo text"
+                value={centerText}
+                onChange={(e) => setCenterText(e.target.value)}
+                className="w-full p-4 glass-minimal border border-white/20 rounded-xl text-white placeholder-slate-400 focus:border-aurora-emerald focus:ring-2 focus:ring-aurora-emerald/30 transition-all"
+              />
+            </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-slate-300 mb-3">Foreground</label>
-                <div className="flex items-center space-x-3">
-                  <input 
-                    type="color" 
-                    value={fgColor} 
-                    onChange={(e) => setFgColor(e.target.value)} 
-                    className="w-12 h-12 rounded-xl border-2 border-white/20 cursor-pointer bg-transparent"
-                  />
-                  <span className="text-sm text-slate-300 font-mono">{fgColor}</span>
-                </div>
+                <input 
+                  type="color" 
+                  value={fgColor} 
+                  onChange={(e) => setFgColor(e.target.value)} 
+                  className="w-full h-12 rounded-lg border-2 border-slate-600 cursor-pointer"
+                />
               </div>
               <div>
                 <label className="block text-sm font-semibold text-slate-300 mb-3">Background</label>
-                <div className="flex items-center space-x-3">
-                  <input 
-                    type="color" 
-                    value={bgColor} 
-                    onChange={(e) => setBgColor(e.target.value)} 
-                    className="w-12 h-12 rounded-xl border-2 border-white/20 cursor-pointer bg-transparent"
-                  />
-                  <span className="text-sm text-slate-300 font-mono">{bgColor}</span>
-                </div>
+                <input 
+                  type="color" 
+                  value={bgColor} 
+                  onChange={(e) => setBgColor(e.target.value)} 
+                  className="w-full h-12 rounded-lg border-2 border-slate-600 cursor-pointer"
+                />
               </div>
-            </div>
-            
-            <div>
-              <label className="block text-sm font-semibold text-slate-300 mb-3">Center Text</label>
-              <input
-                type="text"
-                placeholder="Add text in center"
-                value={centerText}
-                onChange={(e) => setCenterText(e.target.value)}
-                className="w-full p-4 glass-minimal border border-white/20 rounded-xl text-white placeholder-slate-400 focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/30 transition-all"
-              />
             </div>
           </div>
 
@@ -173,19 +158,22 @@ function QrCodeGenerator({ onBack }) {
   const [error, setError] = useState(null);
   const [editingQr, setEditingQr] = useState(null);
 
+  // Load QR codes from localStorage on component mount
   useEffect(() => {
-    fetchQrCodes();
+    const savedQrCodes = localStorage.getItem('wiqr-qr-codes');
+    if (savedQrCodes) {
+      try {
+        setQrCodes(JSON.parse(savedQrCodes));
+      } catch (error) {
+        console.error('Error loading QR codes:', error);
+      }
+    }
   }, []);
 
-  const fetchQrCodes = async () => {
-    try {
-      const response = await axios.get('http://localhost:3001/api/qr');
-      setQrCodes(response.data);
-    } catch (err) {
-      setError('Failed to fetch QR codes.');
-      console.error(err);
-    }
-  };
+  // Save QR codes to localStorage whenever qrCodes changes
+  useEffect(() => {
+    localStorage.setItem('wiqr-qr-codes', JSON.stringify(qrCodes));
+  }, [qrCodes]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -195,14 +183,29 @@ function QrCodeGenerator({ onBack }) {
     }
     setIsLoading(true);
     setError(null);
+    
     try {
-      await axios.post('http://localhost:3001/api/qr', { name, originalUrl, fgColor, bgColor, centerText });
+      const newQr = {
+        _id: `qr_${Date.now()}`,
+        name: name || 'Untitled',
+        originalUrl,
+        shortUrl: originalUrl, // For client-side, we don't create short URLs
+        clicks: 0,
+        fgColor,
+        bgColor,
+        centerText,
+        type: 'url',
+        createdAt: new Date().toISOString()
+      };
+      
+      setQrCodes(prev => [newQr, ...prev]);
+      
+      // Reset form
       setName('');
       setOriginalUrl('');
       setFgColor('#000000');
       setBgColor('#ffffff');
       setCenterText('');
-      fetchQrCodes();
     } catch (err) {
       setError('Failed to create QR code.');
       console.error(err);
@@ -212,23 +215,14 @@ function QrCodeGenerator({ onBack }) {
   };
 
   const handleDelete = async (id) => {
-    try {
-      await axios.delete(`http://localhost:3001/api/qr/${id}`);
-      fetchQrCodes();
-    } catch (err) {
-      setError('Failed to delete QR code.');
-      console.error(err);
-    }
+    setQrCodes(prev => prev.filter(qr => qr._id !== id));
   };
 
   const handleUpdate = async (id, updatedData) => {
-    try {
-      await axios.put(`http://localhost:3001/api/qr/${id}`, updatedData);
-      setEditingQr(null);
-      fetchQrCodes();
-    } catch (err) {
-      console.error('Failed to update QR code.', err);
-    }
+    setQrCodes(prev => prev.map(qr => 
+      qr._id === id ? { ...qr, ...updatedData } : qr
+    ));
+    setEditingQr(null);
   };
 
   const downloadQRCode = (qr) => {
@@ -238,7 +232,7 @@ function QrCodeGenerator({ onBack }) {
     
     for (let card of qrCards) {
       const cardText = card.textContent;
-      if (cardText.includes(qr.name || 'Untitled') && cardText.includes('Short URL:')) {
+      if (cardText.includes(qr.name || 'Untitled') && cardText.includes('URL:')) {
         targetCard = card;
         break;
       }

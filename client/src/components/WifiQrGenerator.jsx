@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { QRCodeSVG } from 'qrcode.react';
 
 // WiFi QR code data formatter
@@ -41,7 +40,7 @@ function EditWifiModal({ qr, onClose, onSave }) {
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="glass-ultra border-2 border-white/20 rounded-3xl shadow-2xl w-full max-w-2xl aurora-glow max-h-[90vh] overflow-y-auto">
+      <div className="glass-ultra border-2 border-white/20 rounded-3xl shadow-2xl w-full max-w-md aurora-glow">
         <div className="p-8">
           <h2 className="text-2xl font-bold text-white mb-6">Edit WiFi QR Code</h2>
           
@@ -50,101 +49,82 @@ function EditWifiModal({ qr, onClose, onSave }) {
               <label className="block text-sm font-semibold text-slate-300 mb-3">Name</label>
               <input
                 type="text"
-                placeholder="WiFi QR Code Name"
+                placeholder="WiFi QR Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="w-full p-4 glass-minimal border border-white/20 rounded-xl text-white placeholder-slate-400 focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/30 transition-all"
               />
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-slate-300 mb-3">Network Name (SSID) *</label>
-                <input
-                  type="text"
-                  placeholder="My WiFi Network"
-                  value={ssid}
-                  onChange={(e) => setSsid(e.target.value)}
-                  required
-                  className="w-full p-4 glass-minimal border border-white/20 rounded-xl text-white placeholder-slate-400 focus:border-aurora-blue focus:ring-2 focus:ring-aurora-blue/30 transition-all"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-300 mb-3">Password</label>
-                <input
-                  type="password"
-                  placeholder="Network password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full p-4 glass-minimal border border-white/20 rounded-xl text-white placeholder-slate-400 focus:border-aurora-blue focus:ring-2 focus:ring-aurora-blue/30 transition-all"
-                />
-              </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-300 mb-3">Network Name (SSID)</label>
+              <input
+                type="text"
+                placeholder="My WiFi Network"
+                value={ssid}
+                onChange={(e) => setSsid(e.target.value)}
+                required
+                className="w-full p-4 glass-minimal border border-white/20 rounded-xl text-white placeholder-slate-400 focus:border-aurora-blue focus:ring-2 focus:ring-aurora-blue/30 transition-all"
+              />
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-slate-300 mb-3">Security Type</label>
-                <select
-                  value={security}
-                  onChange={(e) => setSecurity(e.target.value)}
-                  className="w-full p-4 glass-minimal border border-white/20 rounded-xl text-white bg-slate-800/50 focus:border-aurora-blue focus:ring-2 focus:ring-aurora-blue/30 transition-all"
-                >
-                  <option value="WPA">WPA/WPA2</option>
-                  <option value="WEP">WEP</option>
-                  <option value="nopass">Open (No Password)</option>
-                </select>
-              </div>
-              <div className="flex items-center space-x-3 pt-8">
-                <input
-                  type="checkbox"
-                  id="hidden"
-                  checked={hidden}
-                  onChange={(e) => setHidden(e.target.checked)}
-                  className="w-5 h-5 rounded border-2 border-white/20 bg-glass-minimal checked:bg-aurora-blue checked:border-aurora-blue"
-                />
-                <label htmlFor="hidden" className="text-sm font-semibold text-slate-300">Hidden Network</label>
-              </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-300 mb-3">Password</label>
+              <input
+                type="password"
+                placeholder="WiFi Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full p-4 glass-minimal border border-white/20 rounded-xl text-white placeholder-slate-400 focus:border-aurora-emerald focus:ring-2 focus:ring-aurora-emerald/30 transition-all"
+              />
             </div>
-            
-            {/* Design Options */}
-            <div className="border-t border-white/10 pt-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Design Options</h3>
-              
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label className="block text-sm font-semibold text-slate-300 mb-3">Foreground</label>
-                  <div className="flex items-center space-x-3">
-                    <input 
-                      type="color" 
-                      value={fgColor} 
-                      onChange={(e) => setFgColor(e.target.value)} 
-                      className="w-12 h-12 rounded-xl border-2 border-white/20 cursor-pointer bg-transparent"
-                    />
-                    <span className="text-sm text-slate-300 font-mono">{fgColor}</span>
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-slate-300 mb-3">Background</label>
-                  <div className="flex items-center space-x-3">
-                    <input 
-                      type="color" 
-                      value={bgColor} 
-                      onChange={(e) => setBgColor(e.target.value)} 
-                      className="w-12 h-12 rounded-xl border-2 border-white/20 cursor-pointer bg-transparent"
-                    />
-                    <span className="text-sm text-slate-300 font-mono">{bgColor}</span>
-                  </div>
-                </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-300 mb-3">Security Type</label>
+              <select
+                value={security}
+                onChange={(e) => setSecurity(e.target.value)}
+                className="w-full p-4 glass-minimal border border-white/20 rounded-xl text-white bg-slate-800/50 focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/30 transition-all"
+              >
+                <option value="WPA">WPA/WPA2</option>
+                <option value="WEP">WEP</option>
+                <option value="nopass">Open (No Password)</option>
+              </select>
+            </div>
+            <div className="flex items-center space-x-3">
+              <input
+                type="checkbox"
+                id="hidden"
+                checked={hidden}
+                onChange={(e) => setHidden(e.target.checked)}
+                className="w-5 h-5 text-aurora-blue bg-slate-800 border-slate-600 rounded focus:ring-aurora-blue focus:ring-2"
+              />
+              <label htmlFor="hidden" className="text-sm text-slate-300">Hidden Network</label>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-300 mb-3">Center Text (Optional)</label>
+              <input
+                type="text"
+                placeholder="WiFi"
+                value={centerText}
+                onChange={(e) => setCenterText(e.target.value)}
+                className="w-full p-4 glass-minimal border border-white/20 rounded-xl text-white placeholder-slate-400 focus:border-aurora-emerald focus:ring-2 focus:ring-aurora-emerald/30 transition-all"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-slate-300 mb-3">Foreground</label>
+                <input 
+                  type="color" 
+                  value={fgColor} 
+                  onChange={(e) => setFgColor(e.target.value)} 
+                  className="w-full h-12 rounded-lg border-2 border-slate-600 cursor-pointer"
+                />
               </div>
-              
-              <div className="mb-4">
-                <label className="block text-sm font-semibold text-slate-300 mb-3">Center Text</label>
-                <input
-                  type="text"
-                  placeholder="WiFi"
-                  value={centerText}
-                  onChange={(e) => setCenterText(e.target.value)}
-                  className="w-full p-4 glass-minimal border border-white/20 rounded-xl text-white placeholder-slate-400 focus:border-aurora-purple focus:ring-2 focus:ring-aurora-purple/30 transition-all"
+              <div>
+                <label className="block text-sm font-semibold text-slate-300 mb-3">Background</label>
+                <input 
+                  type="color" 
+                  value={bgColor} 
+                  onChange={(e) => setBgColor(e.target.value)} 
+                  className="w-full h-12 rounded-lg border-2 border-slate-600 cursor-pointer"
                 />
               </div>
             </div>
@@ -243,26 +223,22 @@ function WifiQrGenerator({ onBack }) {
 
   const wifiString = ssid ? formatWifiQR(ssid, password, security, hidden) : '';
 
+  // Load WiFi QR codes from localStorage on component mount
   useEffect(() => {
-    fetchWifiQrCodes();
-  }, []);
-
-  const fetchWifiQrCodes = async () => {
-    try {
-      const response = await axios.get('http://localhost:3001/api/qr/wifi');
-      setQrCodes(response.data);
-    } catch {
-      // If endpoint doesn't exist yet, fetch all and filter
+    const savedQrCodes = localStorage.getItem('wiqr-wifi-qr-codes');
+    if (savedQrCodes) {
       try {
-        const response = await axios.get('http://localhost:3001/api/qr');
-        const wifiCodes = response.data.filter(qr => qr.type === 'wifi' || qr.originalUrl?.startsWith('WIFI:'));
-        setQrCodes(wifiCodes);
+        setQrCodes(JSON.parse(savedQrCodes));
       } catch (error) {
-        setError('Failed to fetch WiFi QR codes.');
-        console.error(error);
+        console.error('Error loading WiFi QR codes:', error);
       }
     }
-  };
+  }, []);
+
+  // Save WiFi QR codes to localStorage whenever qrCodes changes
+  useEffect(() => {
+    localStorage.setItem('wiqr-wifi-qr-codes', JSON.stringify(qrCodes));
+  }, [qrCodes]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -277,15 +253,19 @@ function WifiQrGenerator({ onBack }) {
       const wifiData = { ssid, password, security, hidden };
       const wifiQrString = formatWifiQR(ssid, password, security, hidden);
       
-      await axios.post('http://localhost:3001/api/qr', { 
-        name: name || `WiFi: ${ssid}`, 
+      const newQr = {
+        _id: `wifi_qr_${Date.now()}`,
+        name: name || `WiFi: ${ssid}`,
         originalUrl: wifiQrString,
         wifiData,
-        fgColor, 
+        fgColor,
         bgColor,
         centerText,
-        type: 'wifi'
-      });
+        type: 'wifi',
+        createdAt: new Date().toISOString()
+      };
+      
+      setQrCodes(prev => [newQr, ...prev]);
       
       // Reset form
       setName('');
@@ -296,8 +276,6 @@ function WifiQrGenerator({ onBack }) {
       setFgColor('#000000');
       setBgColor('#ffffff');
       setCenterText('');
-      
-      fetchWifiQrCodes();
     } catch (error) {
       setError('Failed to create WiFi QR code.');
       console.error(error);
@@ -307,23 +285,14 @@ function WifiQrGenerator({ onBack }) {
   };
 
   const handleDelete = async (id) => {
-    try {
-      await axios.delete(`http://localhost:3001/api/qr/${id}`);
-      fetchWifiQrCodes();
-    } catch (error) {
-      setError('Failed to delete WiFi QR code.');
-      console.error(error);
-    }
+    setQrCodes(prev => prev.filter(qr => qr._id !== id));
   };
 
   const handleUpdate = async (id, updatedData) => {
-    try {
-      await axios.put(`http://localhost:3001/api/qr/${id}`, updatedData);
-      setEditingQr(null);
-      fetchWifiQrCodes();
-    } catch (error) {
-      console.error('Failed to update WiFi QR code.', error);
-    }
+    setQrCodes(prev => prev.map(qr => 
+      qr._id === id ? { ...qr, ...updatedData } : qr
+    ));
+    setEditingQr(null);
   };
 
   const downloadQRCode = (qr) => {
