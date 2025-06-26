@@ -2,6 +2,7 @@ import { useState } from 'react';
 import FileConverter from './components/FileConverter';
 import QrCodeGenerator from './components/QrCodeGenerator';
 import WifiQrGenerator from './components/WifiQrGenerator';
+import DataVisualizer from './components/DataVisualizer';
 import Dashboard from './components/Dashboard';
 import ThreeBackground from './components/ThreeBackground';
 import './App.css';
@@ -18,6 +19,8 @@ function App() {
         return <QrCodeGenerator onBack={() => setCurrentPage('dashboard')} user={user} />;
       case 'wifi':
         return <WifiQrGenerator onBack={() => setCurrentPage('dashboard')} user={user} />;
+      case 'visualizer':
+        return <DataVisualizer onBack={() => setCurrentPage('dashboard')} />;
       case 'dashboard':
       default:
         return <Dashboard onNavigate={setCurrentPage} user={user} setUser={setUser} />;
