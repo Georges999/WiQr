@@ -190,13 +190,14 @@ function FileConverter({ onBack }) {
             <p className="text-xl text-slate-300 font-light">Convert any file type with professional quality</p>
             
             {/* PDF to Word Featured Indicator */}
-            <div className="inline-flex items-center px-6 py-3 mt-6 glass-frosted rounded-2xl border border-emerald-400/30">
-              <div className="w-8 h-8 bg-emerald-500/80 rounded-lg flex items-center justify-center mr-3">
+            <div className="inline-flex items-center px-6 py-3 mt-6 glass-frosted rounded-2xl border border-orange-400/30">
+              <div className="w-8 h-8 bg-orange-500/80 rounded-lg flex items-center justify-center mr-3">
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <span className="text-emerald-300 font-semibold"> Now Supports PDF ↔ Word Conversion!</span>
+              <span className="text-orange-300 font-semibold">PDF ↔ Word Conversion</span>
+              <span className="ml-2 px-2 py-1 bg-orange-500/80 rounded-lg text-xs font-bold text-white">Coming Soon</span>
             </div>
           </div>
         </div>
@@ -228,8 +229,14 @@ function FileConverter({ onBack }) {
                       Images
                     </h4>
                     <div className="text-xs text-slate-300 space-y-1">
-                      <div>JPG ↔ PNG, WebP, GIF, TIFF</div>
-                      <div>PNG ↔ JPG, WebP, GIF, TIFF</div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-orange-300">JPG ↔ PNG, WebP, GIF, TIFF</span>
+                        <span className="px-1.5 py-0.5 bg-orange-500/80 rounded text-[10px] font-bold text-white">Soon</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-orange-300">PNG ↔ JPG, WebP, GIF, TIFF</span>
+                        <span className="px-1.5 py-0.5 bg-orange-500/80 rounded text-[10px] font-bold text-white">Soon</span>
+                      </div>
                     </div>
                   </div>
 
@@ -242,9 +249,18 @@ function FileConverter({ onBack }) {
                       Documents
                     </h4>
                     <div className="text-xs text-slate-300 space-y-1">
-                      <div className="text-emerald-300 font-medium"> PDF ↔ DOCX (Word)</div>
-                      <div>PDF → TXT, HTML</div>
-                      <div>DOCX → TXT, HTML</div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-orange-300 font-medium">PDF ↔ DOCX (Word)</span>
+                        <span className="px-1.5 py-0.5 bg-orange-500/80 rounded text-[10px] font-bold text-white">Soon</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-orange-300">PDF → TXT, HTML</span>
+                        <span className="px-1.5 py-0.5 bg-orange-500/80 rounded text-[10px] font-bold text-white">Soon</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-orange-300">DOCX → TXT, HTML</span>
+                        <span className="px-1.5 py-0.5 bg-orange-500/80 rounded text-[10px] font-bold text-white">Soon</span>
+                      </div>
                     </div>
                   </div>
 
@@ -257,8 +273,11 @@ function FileConverter({ onBack }) {
                       Spreadsheets
                     </h4>
                     <div className="text-xs text-slate-300 space-y-1">
-                      <div>XLSX ↔ CSV, JSON</div>
-                      <div>CSV ↔ JSON, XLSX</div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-orange-300">XLSX ↔ CSV, JSON</span>
+                        <span className="px-1.5 py-0.5 bg-orange-500/80 rounded text-[10px] font-bold text-white">Soon</span>
+                      </div>
+                      <div>CSV ↔ JSON</div>
                     </div>
                   </div>
 
@@ -271,8 +290,12 @@ function FileConverter({ onBack }) {
                       Data
                     </h4>
                     <div className="text-xs text-slate-300 space-y-1">
-                      <div>JSON ↔ CSV, XLSX</div>
-                      <div>TXT → HTML, PDF</div>
+                      <div>JSON ↔ CSV</div>
+                      <div>TXT → HTML</div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-orange-300">TXT → PDF</span>
+                        <span className="px-1.5 py-0.5 bg-orange-500/80 rounded text-[10px] font-bold text-white">Soon</span>
+                      </div>
                     </div>
                   </div>
                 </div>
