@@ -37,7 +37,7 @@ function FileConverter({ onBack }) {
     formData.append('file', file);
 
     try {
-      const response = await axios.post('http://localhost:3001/convert/analyze', formData);
+      const response = await axios.post('/api/convert?action=analyze', formData);
       setFileAnalysis(response.data);
       
       // Auto-select first available format if any
@@ -67,7 +67,7 @@ function FileConverter({ onBack }) {
     formData.append('format', selectedFormat);
 
     try {
-      const response = await axios.post('http://localhost:3001/convert', formData, {
+      const response = await axios.post('/api/convert', formData, {
         responseType: 'blob',
       });
 
