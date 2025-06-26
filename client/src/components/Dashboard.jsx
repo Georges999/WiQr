@@ -163,6 +163,81 @@ function Dashboard({ onNavigate }) {
       {/* Main Content */}
       <main className="flex-1 px-6 pb-20">
         <div className="max-w-7xl mx-auto">
+          {/* Security & Privacy Notice */}
+          <section className="mb-16">
+            <div className="glass-ultra border border-emerald-400/20 rounded-3xl p-8 relative overflow-hidden">
+              {/* Background decoration */}
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-blue-500/5"></div>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-emerald-400/10 to-transparent rounded-full blur-2xl"></div>
+              
+              <div className="relative z-10">
+                <div className="flex items-start space-x-6">
+                  <div className="flex-shrink-0">
+                    <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-blue-500 rounded-2xl flex items-center justify-center">
+                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                      </svg>
+                    </div>
+                  </div>
+                  
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <h3 className="text-2xl font-bold text-white">🔒 Your Privacy is Our Priority</h3>
+                      <div className="inline-flex items-center px-3 py-1 bg-emerald-500/20 border border-emerald-400/30 rounded-full">
+                        <div className="w-2 h-2 bg-emerald-400 rounded-full mr-2 animate-pulse"></div>
+                        <span className="text-emerald-300 text-sm font-semibold">100% Local Processing</span>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-3">
+                        <div className="flex items-center space-x-3">
+                          <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                          <span className="text-slate-300">No database storage - everything processed locally</span>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                          <span className="text-slate-300">Files processed on-device and immediately deleted</span>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                          <span className="text-slate-300">Zero data collection or tracking</span>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <div className="flex items-center space-x-3">
+                          <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                          </svg>
+                          <span className="text-slate-300">Transparent - check our API at <code className="text-blue-300 bg-slate-800/50 px-2 py-1 rounded">localhost:3001</code></span>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                          </svg>
+                          <span className="text-slate-300">Open-source architecture you can trust</span>
+                        </div>
+                        <div className="flex items-center space-x-3">
+                          <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          </svg>
+                          <span className="text-slate-300">Lightning-fast processing without cloud dependency</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
           {/* Feature Grid */}
           <section className="mb-20">
             <div className="text-center mb-12">

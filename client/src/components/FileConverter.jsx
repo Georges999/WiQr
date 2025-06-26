@@ -180,13 +180,105 @@ function FileConverter({ onBack }) {
           <div className="text-center fade-in-scale">
             <h1 className="font-display text-page-title mb-6">Universal File Converter</h1>
             <p className="text-xl text-slate-300 font-light">Convert any file type with professional quality</p>
+            
+            {/* PDF to Word Featured Indicator */}
+            <div className="inline-flex items-center px-6 py-3 mt-6 glass-frosted rounded-2xl border border-emerald-400/30">
+              <div className="w-8 h-8 bg-emerald-500/80 rounded-lg flex items-center justify-center mr-3">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <span className="text-emerald-300 font-semibold"> Now Supports PDF ↔ Word Conversion!</span>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center px-6">
-        <div className="w-full max-w-5xl space-y-10">
+      <main className="flex-1 px-6">
+        <div className="w-full max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Conversion List Sidebar */}
+            <div className="lg:col-span-1">
+              <div className="glass-ultra rounded-3xl p-6 sticky top-8">
+                <h3 className="text-xl font-bold text-white mb-6 flex items-center">
+                  <div className="w-8 h-8 bg-gradient-to-r from-aurora-purple to-aurora-blue rounded-lg flex items-center justify-center mr-3">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                  </div>
+                  Supported Conversions
+                </h3>
+                
+                <div className="space-y-4">
+                  {/* Images */}
+                  <div className="space-y-2">
+                    <h4 className="text-aurora-blue font-semibold text-sm flex items-center">
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      Images
+                    </h4>
+                    <div className="text-xs text-slate-300 space-y-1">
+                      <div>JPG ↔ PNG, WebP, GIF, TIFF</div>
+                      <div>PNG ↔ JPG, WebP, GIF, TIFF</div>
+                    </div>
+                  </div>
+
+                  {/* Documents */}
+                  <div className="space-y-2">
+                    <h4 className="text-aurora-emerald font-semibold text-sm flex items-center">
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                      Documents
+                    </h4>
+                    <div className="text-xs text-slate-300 space-y-1">
+                      <div className="text-emerald-300 font-medium"> PDF ↔ DOCX (Word)</div>
+                      <div>PDF → TXT, HTML</div>
+                      <div>DOCX → TXT, HTML</div>
+                    </div>
+                  </div>
+
+                  {/* Spreadsheets */}
+                  <div className="space-y-2">
+                    <h4 className="text-aurora-purple font-semibold text-sm flex items-center">
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
+                      Spreadsheets
+                    </h4>
+                    <div className="text-xs text-slate-300 space-y-1">
+                      <div>XLSX ↔ CSV, JSON</div>
+                      <div>CSV ↔ JSON, XLSX</div>
+                    </div>
+                  </div>
+
+                  {/* Data */}
+                  <div className="space-y-2">
+                    <h4 className="text-aurora-blue font-semibold text-sm flex items-center">
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      Data
+                    </h4>
+                    <div className="text-xs text-slate-300 space-y-1">
+                      <div>JSON ↔ CSV, XLSX</div>
+                      <div>TXT → HTML, PDF</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 p-3 glass-minimal rounded-xl border border-blue-400/20">
+                  <p className="text-xs text-blue-300 text-center">
+                    <span className="font-semibold"> Tip:</span> Upload any file to see available conversions!
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Main Converter Area */}
+            <div className="lg:col-span-3 space-y-10">
           {/* Upload Area */}
           <div
             {...getRootProps()}
@@ -359,6 +451,8 @@ function FileConverter({ onBack }) {
               </div>
             </div>
           )}
+            </div>
+          </div>
         </div>
       </main>
 
