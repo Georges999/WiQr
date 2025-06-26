@@ -1,68 +1,153 @@
-# WiQr - The Ultimate Conversion & QR Hub
+# WiQr - Universal File Conversion & QR Code Platform
 
-Welcome to WiQr, a modern, all-in-one web platform for universal file conversion and smart QR code generation. This project aims to provide a seamless, powerful, and beautiful user experience, free from the usual restrictions of similar online tools.
+🌐 **Live Demo:** [wiqr.vercel.app](https://wiqr.vercel.app)  
+📂 **Source Code:** [github.com/Georges999/WiQr](https://github.com/Georges999/WiQr)
 
-## Vision
+A modern, privacy-first web platform combining universal file conversion and intelligent QR code generation. Built with a stunning glass-morphism interface powered by Three.js, WiQr sets a new standard for utility websites.
 
-Our goal is to create a single destination for two key tasks:
+## ✨ Features
 
-1.  **Universal File Converter:** Convert any file to any other format. Drag, drop, and convert. No sign-ups, no file size limits. The tool is designed to work offline after the initial load for maximum convenience.
-2.  **Smart QR Code Generator:** Create dynamic, editable QR codes for a variety of uses, from WiFi access to business cards. Track scan analytics, perform A/B tests, and bulk-generate codes with ease.
+### 🔄 Universal File Converter
+- **Multi-format Support:** Images (JPG, PNG, WebP, GIF, TIFF), Documents (PDF ↔ DOCX, TXT, HTML), Spreadsheets (XLSX, CSV, JSON)
+- **Smart Format Detection:** Automatic file analysis with intelligent conversion suggestions
+- **Privacy-First:** All processing done locally - no data storage or tracking
+- **Professional Quality:** Leverages industry-standard libraries for reliable conversions
 
-The entire experience is wrapped in a stunning, interactive interface powered by Three.js, setting a new standard for what a utility website can be.
+### 📱 Smart QR Code Generator
+- **Dual Generators:** URL QR codes and WiFi QR codes with custom styling
+- **Advanced Customization:** Color themes, size options, and error correction levels
+- **Download Support:** High-resolution PNG export (512x512px) with SVG-to-Canvas conversion
+- **Real-time Preview:** Instant QR code generation with live customization
 
-## Technology Stack
+### 🎨 Interactive 3D Interface
+- **Three.js Integration:** Immersive 3D background with particle systems
+- **Glass-morphism Design:** Modern UI with advanced CSS effects and animations
+- **Responsive Layout:** Mobile-first design with adaptive grid systems
+- **Professional UX:** Smooth transitions, loading states, and error handling
 
-- **Frontend:**
-  - **Framework:** [React](https://reactjs.org/) (with [Vite](https://vitejs.dev/))
-  - **3D Graphics:** [Three.js](https://threejs.org/) (with [React Three Fiber](https://docs.pmnd.rs/react-three-fiber))
-  - **Styling:** [Tailwind CSS](https://tailwindcss.com/)
-  - **Drag & Drop:** [React Dropzone](https://react-dropzone.js.org/)
+## 🛠 Technology Stack
 
-- **Backend:**
-  - **Framework:** [Node.js](https://nodejs.org/) with [Express.js](https://expressjs.com/)
-  - **Database:** [MongoDB](https://www.mongodb.com/) (for QR code data)
-  - **File Conversion:** Libraries such as `fluent-ffmpeg`, `sharp`, and others will be used.
+### Frontend
+- **Framework:** [React 18](https://reactjs.org/) with [Vite](https://vitejs.dev/) for fast development
+- **3D Graphics:** [Three.js](https://threejs.org/) with [React Three Fiber](https://docs.pmnd.rs/react-three-fiber)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/) with custom glass-morphism components
+- **File Handling:** [React Dropzone](https://react-dropzone.js.org/) for drag-and-drop uploads
+- **QR Generation:** [qrcode.js](https://github.com/soldair/node-qrcode) for client-side QR code creation
+- **Data Visualization:** [Chart.js](https://www.chartjs.org/) with React wrapper for analytics
+- **Analytics:** [Vercel Analytics](https://vercel.com/analytics) for performance monitoring
 
-- **Architecture:**
-  - A **monorepo** structure is used to manage the `client` and `server` applications in one place.
+### Backend
+- **Runtime:** [Node.js](https://nodejs.org/) with [Express.js](https://expressjs.com/) framework
+- **File Processing Libraries:**
+  - **Images:** [Sharp](https://sharp.pixelplumbing.com/) for high-performance image processing
+  - **Documents:** [Mammoth.js](https://github.com/mwilliamson/mammoth.js) for DOCX parsing, [pdf-parse](https://www.npmjs.com/package/pdf-parse) for PDF text extraction
+  - **Spreadsheets:** [SheetJS](https://sheetjs.com/) for Excel/CSV processing
+  - **PDF Generation:** [Puppeteer](https://pptr.dev/) for HTML-to-PDF conversion
+- **File Upload:** [Multer](https://github.com/expressjs/multer) with memory storage
+- **Data Storage:** In-memory storage with JSON backup (no database required)
 
-## Project Structure
+### Deployment & DevOps
+- **Hosting:** [Vercel](https://vercel.com/) with automatic deployments
+- **CI/CD:** GitHub integration with Vercel for seamless updates
+- **Performance:** Edge functions and CDN optimization
+- **Monitoring:** Built-in analytics and error tracking
+
+## 📁 Project Structure
 
 ```
-/
-├── client/         # React Frontend
-├── server/         # Node.js Backend
-├── package.json    # Root package.json for monorepo scripts
-└── README.md
+WiQr/
+├── client/                 # React Frontend Application
+│   ├── src/
+│   │   ├── components/    # React components (Dashboard, FileConverter, QR Generators)
+│   │   ├── assets/        # Static assets and images
+│   │   └── styles/        # CSS and Tailwind configurations
+│   ├── public/            # Public assets (logos, favicon)
+│   └── package.json       # Frontend dependencies
+├── server/                # Node.js Backend API
+│   ├── models/           # Data models and schemas
+│   ├── routes/           # API route handlers
+│   ├── index.js          # Main server file
+│   └── package.json      # Backend dependencies
+├── vercel.json           # Vercel deployment configuration
+└── README.md             # Project documentation
 ```
 
-## Getting Started
+## 🚀 Getting Started
 
-To get the project running locally, follow these steps:
+### Prerequisites
+- Node.js 18+ and npm
+- Git for version control
 
-1.  **Install Root Dependencies:**
-    ```bash
-    npm install
-    ```
+### Local Development
 
-2.  **Install Client Dependencies:**
-    ```bash
-    cd client
-    npm install
-    cd ..
-    ```
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/Georges999/WiQr.git
+   cd WiQr
+   ```
 
-3.  **Install Server Dependencies:**
-    ```bash
-    cd server
-    npm install
-    cd ..
-    ```
+2. **Install Dependencies**
+   ```bash
+   # Install root dependencies
+   npm install
+   
+   # Install client dependencies
+   cd client && npm install && cd ..
+   
+   # Install server dependencies
+   cd server && npm install && cd ..
+   ```
 
-4.  **Run the Development Servers:**
-    ```bash
-    npm run dev
-    ```
+3. **Start Development Servers**
+   ```bash
+   npm run dev
+   ```
+   
+   This starts both servers concurrently:
+   - **Frontend:** http://localhost:5173
+   - **Backend API:** http://localhost:3001
 
-This will start both the client and server concurrently. The client will be available at `http://localhost:5173` and the server will be running on `http://localhost:3000`.
+### Production Deployment
+
+The project is configured for automatic deployment on Vercel:
+
+1. **Fork/Clone** the repository
+2. **Connect** to Vercel dashboard
+3. **Deploy** automatically with zero configuration
+
+## 🔧 Key Implementation Details
+
+### File Conversion Engine
+- **Smart Format Detection:** Automatic MIME type detection and conversion matrix
+- **Memory-Efficient Processing:** Stream-based file handling to support large files
+- **Error Handling:** Comprehensive error catching with user-friendly messages
+- **Format Optimization:** Quality-preserving conversions with format-specific settings
+
+### QR Code System
+- **Client-Side Generation:** Real-time QR code creation without server dependency
+- **High-Resolution Export:** SVG-to-Canvas conversion for crisp 512px downloads
+- **WiFi QR Standards:** Compliant with WiFi QR code specification for universal compatibility
+- **Custom Styling:** Advanced color theming with professional presets
+
+### 3D Interface
+- **Performance Optimized:** Efficient particle systems with frame rate management
+- **Responsive Design:** Adaptive 3D elements that scale across devices
+- **Accessibility:** Reduced motion options and keyboard navigation support
+
+## 🎯 Privacy & Security
+
+- **Zero Data Storage:** Files processed in memory and immediately discarded
+- **Local Processing:** No server-side file storage or user tracking
+- **Transparent Operations:** Open-source codebase for full transparency
+- **HTTPS Encryption:** Secure data transmission for all operations
+
+## 👨‍💻 Author
+
+**Georges Ghazal**
+- Website: [georges-ghazal.org](https://georges-ghazal.org)
+- GitHub: [@Georges999](https://github.com/Georges999)
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
