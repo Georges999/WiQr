@@ -37,7 +37,7 @@ function Dashboard({ onNavigate }) {
     {
       id: 'converter',
       title: 'File Converter',
-      description: 'Transform images between formats with enterprise-grade quality and precision',
+      description: 'Transform images between formats with enterprise-grade quality and precision(supports pdf to word!)',
       icon: (
         <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -123,17 +123,12 @@ function Dashboard({ onNavigate }) {
       <header className="pt-20 pb-16">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center animate-fade-in">
-            <div className="inline-flex items-center gap-3 glass-subtle px-6 py-3 rounded-full mb-8">
-              <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-              <span className="text-small font-medium">All systems operational</span>
-            </div>
-            
             <h1 className="font-display text-page-title mb-6">
-              WiQr
+              WiQr by G.G.
             </h1>
             
             <p className="text-subtitle max-w-4xl mx-auto mb-12">
-              Enterprise-grade digital transformation platform for modern businesses
+              Digital tools for everyone! Anyone can use this for free no sign up, no ads, no tracking, no nothing!
             </p>
             
             <div className="flex flex-wrap items-center justify-center gap-4">
@@ -182,7 +177,7 @@ function Dashboard({ onNavigate }) {
                   
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-4">
-                      <h3 className="text-2xl font-bold text-white">🔒 Your Privacy is Our Priority</h3>
+                      <h3 className="text-2xl font-bold text-white"> Your Privacy is Our Priority</h3>
                       <div className="inline-flex items-center px-3 py-1 bg-emerald-500/20 border border-emerald-400/30 rounded-full">
                         <div className="w-2 h-2 bg-emerald-400 rounded-full mr-2 animate-pulse"></div>
                         <span className="text-emerald-300 text-sm font-semibold">100% Local Processing</span>
@@ -294,6 +289,16 @@ function Dashboard({ onNavigate }) {
                   </div>
                 </div>
               ))}
+            </div>
+          </section>
+
+          {/* All Systems Operational Badge */}
+          <section className="mb-16">
+            <div className="text-center">
+              <div className="inline-flex items-center gap-3 glass-subtle px-8 py-4 rounded-full">
+                <div className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
+                <span className="text-base font-semibold text-emerald-300">All systems operational</span>
+              </div>
             </div>
           </section>
 

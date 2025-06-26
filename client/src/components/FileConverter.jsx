@@ -197,10 +197,10 @@ function FileConverter({ onBack }) {
       {/* Main Content */}
       <main className="flex-1 px-6">
         <div className="w-full max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
             {/* Conversion List Sidebar */}
-            <div className="lg:col-span-1">
-              <div className="glass-ultra rounded-3xl p-6 sticky top-8">
+            <div className="xl:col-span-1 order-2 xl:order-1">
+              <div className="glass-ultra rounded-3xl p-6 xl:sticky xl:top-8">
                 <h3 className="text-xl font-bold text-white mb-6 flex items-center">
                   <div className="w-8 h-8 bg-gradient-to-r from-aurora-purple to-aurora-blue rounded-lg flex items-center justify-center mr-3">
                     <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -278,7 +278,7 @@ function FileConverter({ onBack }) {
             </div>
 
             {/* Main Converter Area */}
-            <div className="lg:col-span-3 space-y-10">
+            <div className="xl:col-span-4 space-y-10 order-1 xl:order-2">
           {/* Upload Area */}
           <div
             {...getRootProps()}

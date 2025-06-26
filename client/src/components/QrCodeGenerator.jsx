@@ -231,6 +231,93 @@ function QrCodeGenerator({ onBack }) {
     }
   };
 
+  const downloadQRCode = (qr) => {
+    // Find the specific QR code card that contains this QR
+    const qrCards = document.querySelectorAll('.glass-frosted');
+    let targetCard = null;
+    
+    for (let card of qrCards) {
+      const cardText = card.textContent;
+      if (cardText.includes(qr.name || 'Untitled') && cardText.includes('Short URL:')) {
+        targetCard = card;
+        break;
+      }
+    }
+    
+    if (!targetCard) {
+      alert('QR code not found. Please try again.');
+      return;
+    }
+
+    // Find the QR code SVG within this specific card (not the button icons)
+    const svgElements = targetCard.querySelectorAll('svg');
+    let qrSvg = null;
+    
+    // Look for the largest SVG (which should be the QR code)
+    for (let svg of svgElements) {
+      const width = parseInt(svg.getAttribute('width') || '0');
+      const height = parseInt(svg.getAttribute('height') || '0');
+      // QR code SVGs are typically 150x150 or larger
+      if (width >= 100 && height >= 100) {
+        qrSvg = svg;
+        break;
+      }
+    }
+    
+    if (!qrSvg) {
+      alert('QR code SVG not found. Please try again.');
+      return;
+    }
+
+    // Create canvas and convert SVG to PNG
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const size = 512; // High resolution
+    canvas.width = size;
+    canvas.height = size;
+
+    // Clone the SVG and set it to high resolution
+    const svgClone = qrSvg.cloneNode(true);
+    svgClone.setAttribute('width', size);
+    svgClone.setAttribute('height', size);
+    
+    // Create SVG data URL
+    const svgData = new XMLSerializer().serializeToString(svgClone);
+    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+    const svgUrl = URL.createObjectURL(svgBlob);
+    
+    // Create image and draw to canvas
+    const img = new Image();
+    img.onload = () => {
+      // Fill background
+      ctx.fillStyle = qr.bgColor || '#ffffff';
+      ctx.fillRect(0, 0, size, size);
+      
+      // Draw QR code
+      ctx.drawImage(img, 0, 0, size, size);
+      
+      // Download the canvas as PNG
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${qr.name || 'qr-code'}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        URL.revokeObjectURL(svgUrl);
+      }, 'image/png');
+    };
+    
+    img.onerror = () => {
+      alert('Error downloading QR code. Please try taking a screenshot instead.');
+      URL.revokeObjectURL(svgUrl);
+    };
+    
+    img.src = svgUrl;
+  };
+
   return (
     <>
       <div className="min-h-screen flex flex-col w-full">
@@ -395,8 +482,18 @@ function QrCodeGenerator({ onBack }) {
                         <h4 className="text-lg font-semibold text-white truncate">{qr.name || 'Untitled'}</h4>
                         <div className="flex space-x-2">
                           <button 
+                            onClick={() => downloadQRCode(qr)}
+                            className="p-2 glass-minimal rounded-lg hover:bg-green-500/20 transition-all text-slate-300 hover:text-green-300"
+                            title="Download QR Code"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                          </button>
+                          <button 
                             onClick={() => setEditingQr(qr)}
                             className="p-2 glass-minimal rounded-lg hover:glass-frosted transition-all text-slate-300 hover:text-white"
+                            title="Edit QR Code"
                           >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -405,6 +502,7 @@ function QrCodeGenerator({ onBack }) {
                           <button 
                             onClick={() => handleDelete(qr._id)}
                             className="p-2 glass-minimal rounded-lg hover:bg-red-500/20 transition-all text-slate-300 hover:text-red-300"
+                            title="Delete QR Code"
                           >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
