@@ -371,9 +371,9 @@ function Dashboard({ onNavigate }) {
             <div className="flex items-center justify-center space-x-6 pt-4 text-xs text-slate-400">
               <span>© 2025 WiQr Platform</span>
               <span>•</span>
-              <span>Open Source</span>
+              <span>internshipspeedrun</span>
               <span>•</span>
-              <span>Privacy First</span>
+              <span>HireMePlz</span>
             </div>
           </div>
         </div>

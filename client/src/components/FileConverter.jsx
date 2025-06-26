@@ -36,8 +36,12 @@ function FileConverter({ onBack }) {
     const formData = new FormData();
     formData.append('file', file);
 
+    // Use different endpoints for local vs production
+    const isLocal = window.location.hostname === 'localhost';
+    const apiUrl = isLocal ? 'http://localhost:3001/convert/analyze' : '/api/convert?action=analyze';
+
     try {
-      const response = await axios.post('/api/convert?action=analyze', formData);
+      const response = await axios.post(apiUrl, formData);
       setFileAnalysis(response.data);
       
       // Auto-select first available format if any
@@ -66,8 +70,12 @@ function FileConverter({ onBack }) {
     formData.append('file', file);
     formData.append('format', selectedFormat);
 
+    // Use different endpoints for local vs production
+    const isLocal = window.location.hostname === 'localhost';
+    const apiUrl = isLocal ? 'http://localhost:3001/convert' : '/api/convert';
+
     try {
-      const response = await axios.post('/api/convert', formData, {
+      const response = await axios.post(apiUrl, formData, {
         responseType: 'blob',
       });
 
@@ -499,9 +507,9 @@ function FileConverter({ onBack }) {
             <div className="flex items-center justify-center space-x-6 pt-4 text-xs text-slate-400">
               <span>© 2025 WiQr Platform</span>
               <span>•</span>
-              <span>Open Source</span>
+              <span>internshipspeedrun</span>
               <span>•</span>
-              <span>Privacy First</span>
+              <span>HireMePlz</span>
             </div>
           </div>
         </div>
