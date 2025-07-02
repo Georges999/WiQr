@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import FileConverter from './components/FileConverter';
 import QrCodeGenerator from './components/QrCodeGenerator';
 import WifiQrGenerator from './components/WifiQrGenerator';
@@ -10,6 +10,14 @@ import './App.css';
 function App() {
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [user, setUser] = useState(null); // For future login functionality
+  const scrollContainerRef = useRef(null);
+
+  // Fix page scroll issue - scroll to top when page changes
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, [currentPage]);
 
   const renderPage = () => {
     switch (currentPage) {
@@ -33,7 +41,7 @@ function App() {
       <ThreeBackground />
       
       {/* Main Content */}
-      <div className="relative z-30 w-full h-full overflow-y-auto">
+      <div ref={scrollContainerRef} className="relative z-30 w-full h-full overflow-y-auto">
         {renderPage()}
       </div>
     </div>

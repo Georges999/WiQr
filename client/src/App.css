@@ -405,6 +405,14 @@ body {
 
 /* Mobile optimizations */
 @media (max-width: 768px) {
+  /* Fix mobile viewport height issues that can cause loading problems */
+  html, body, #root {
+    height: 100vh;
+    height: -webkit-fill-available;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+  
   .glass-card, .glass-panel {
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
